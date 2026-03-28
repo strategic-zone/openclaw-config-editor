@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Configuration Editor</title>
+<style>
+/* ===== CSS Reset & Variables ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#1e1e2e;
+  --bg-secondary:#181825;
+  --bg-tertiary:#11111b;
+  --bg-surface:#313244;
+  --bg-hover:#45475a;
+  --bg-input:#1e1e2e;
+  --border:#45475a;
+  --border-focus:#89b4fa;
+  --text-primary:#cdd6f4;
+  --text-secondary:#a6adc8;
+  --text-muted:#6c7086;
+  --text-bright:#f5f5f5;
+  --accent:#89b4fa;
+  --accent-hover:#74c7ec;
+  --green:#a6e3a1;
+  --red:#f38ba8;
+  --yellow:#f9e2af;
+  --peach:#fab387;
+  --mauve:#cba6f7;
+  --teal:#94e2d5;
+  --pink:#f5c2e7;
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow:0 2px 8px rgba(0,0,0,.3);
+  --sidebar-width:280px;
+  --topbar-height:52px;
+  --transition:150ms ease;
+  --font-mono:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
+}
+html{font-size:14px}
+body{font-family:var(--font-sans);background:var(--bg-primary);color:var(--text-primary);overflow:hidden;height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ===== Layout ===== */
+#app{display:flex;flex-direction:column;height:100vh}
+.topbar{height:var(--topbar-height);background:var(--bg-tertiary);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100}
+.topbar .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem;color:var(--text-bright);white-space:nowrap}
+.topbar .logo svg{width:22px;height:22px}
+.topbar .actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.main-layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--bg-secondary);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--bg-hover) transparent}
+.content{flex:1;overflow-y:auto;padding:24px 32px;scrollbar-width:thin;scrollbar-color:var(--bg-hover) transparent}
+.preview-panel{width:0;overflow:hidden;transition:width .25s ease;background:var(--bg-tertiary);border-left:1px solid var(--border);position:relative}
+.preview-panel.open{width:420px}
+.preview-panel pre{padding:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);overflow:auto;height:calc(100vh - var(--topbar-height) - 44px);white-space:pre;tab-size:2;scrollbar-width:thin}
+.preview-header{height:44px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:.85rem;color:var(--text-secondary);gap:8px}
+.preview-header span{flex:1}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--border)}
+
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-surface);color:var(--text-primary);font-size:.8rem;font-weight:500;cursor:pointer;transition:all var(--transition);white-space:nowrap}
+.btn:hover{background:var(--bg-hover);border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:var(--bg-tertiary);border-color:var(--accent);font-weight:600}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:rgba(243,139,168,.15)}
+.btn-sm{padding:4px 10px;font-size:.75rem}
+.btn-icon{padding:6px 8px;font-size:1rem;line-height:1}
+.btn-ghost{background:transparent;border-color:transparent}
+.btn-ghost:hover{background:var(--bg-surface)}
+
+/* ===== Sidebar ===== */
+.sidebar-section{border-bottom:1px solid var(--border)}
+.sidebar-section:last-child{border-bottom:none}
+.sidebar-header{display:flex;align-items:center;padding:10px 16px;cursor:pointer;user-select:none;gap:8px;font-weight:600;font-size:.85rem;color:var(--text-secondary);transition:all var(--transition)}
+.sidebar-header:hover{background:var(--bg-surface);color:var(--text-primary)}
+.sidebar-header.active{color:var(--accent);background:rgba(137,180,250,.08)}
+.sidebar-header .chevron{transition:transform var(--transition);font-size:.7rem;opacity:.5;margin-left:auto}
+.sidebar-header.expanded .chevron{transform:rotate(90deg)}
+.sidebar-header .icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-items{display:none;padding:2px 0 6px}
+.sidebar-header.expanded+.sidebar-items{display:block}
+.sidebar-item{padding:6px 16px 6px 44px;font-size:.8rem;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
+.sidebar-item:hover{color:var(--text-primary);background:var(--bg-surface)}
+.sidebar-item.active{color:var(--accent);background:rgba(137,180,250,.06)}
+.sidebar-item .modified-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--peach);margin-left:6px}
+
+/* ===== Form Controls ===== */
+.section-title{font-size:1.3rem;font-weight:700;margin-bottom:4px;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-desc{color:var(--text-muted);font-size:.85rem;margin-bottom:24px;line-height:1.5}
+.field-group{margin-bottom:20px}
+.field-label{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.field-label .required{color:var(--red);font-weight:700}
+.field-label .badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:3px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-secret{background:rgba(203,166,247,.15);color:var(--mauve);border:1px solid rgba(203,166,247,.3)}
+.badge-security{background:rgba(243,139,168,.12);color:var(--red);border:1px solid rgba(243,139,168,.25)}
+.badge-changed{background:rgba(250,179,135,.12);color:var(--peach);border:1px solid rgba(250,179,135,.25)}
+.field-hint{font-size:.75rem;color:var(--text-muted);margin-top:4px;line-height:1.4}
+input[type="text"],input[type="number"],input[type="password"],textarea,select{width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:.85rem;font-family:var(--font-sans);transition:border-color var(--transition),box-shadow var(--transition);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--border-focus);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
+input::placeholder,textarea::placeholder{color:var(--text-muted)}
+input[type="number"]{font-family:var(--font-mono)}
+textarea{resize:vertical;min-height:80px;font-family:var(--font-mono);font-size:.8rem}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236c7086' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+input.modified,textarea.modified,select.modified{border-color:var(--peach)}
+
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:10px}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle .slider{position:absolute;inset:0;background:var(--bg-hover);border-radius:11px;transition:var(--transition)}
+.toggle .slider::before{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--text-muted);transition:var(--transition)}
+.toggle input:checked+.slider{background:var(--accent)}
+.toggle input:checked+.slider::before{transform:translateX(18px);background:#fff}
+.toggle-label{font-size:.85rem;color:var(--text-primary)}
+
+/* Array field */
+.array-field{display:flex;flex-direction:column;gap:6px}
+.array-item{display:flex;align-items:center;gap:6px}
+.array-item input{flex:1}
+.array-item .btn-remove{padding:6px 8px;color:var(--red);cursor:pointer;background:none;border:1px solid transparent;border-radius:var(--radius);font-size:.9rem;transition:all var(--transition)}
+.array-item .btn-remove:hover{background:rgba(243,139,168,.1);border-color:var(--red)}
+.array-add{align-self:flex-start}
+
+/* Cards */
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.card-header h4{font-size:.9rem;font-weight:600;color:var(--text-bright)}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
+.card-grid .field-group{margin-bottom:0}
+.card-grid .full-width{grid-column:1/-1}
+
+/* SecretRef */
+.secretref-fields{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px}
+.secretref-fields input{font-family:var(--font-mono);font-size:.8rem}
+
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state .icon{font-size:2rem;margin-bottom:12px}
+
+/* Tooltip */
+[data-tooltip]{position:relative}
+[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-tertiary);color:var(--text-primary);padding:6px 10px;border-radius:var(--radius);font-size:.75rem;white-space:nowrap;z-index:1000;border:1px solid var(--border);box-shadow:var(--shadow);max-width:300px;white-space:normal;pointer-events:none}
+
+/* Divider */
+.section-divider{border:none;border-top:1px solid var(--border);margin:28px 0}
+
+/* Tag input */
+.tag-container{display:flex;flex-wrap:wrap;gap:6px;padding:6px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);min-height:38px;cursor:text}
+.tag-container:focus-within{border-color:var(--border-focus);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--bg-hover);border-radius:4px;font-size:.8rem;color:var(--text-primary)}
+.tag .tag-remove{cursor:pointer;color:var(--text-muted);font-size:.9rem;line-height:1}
+.tag .tag-remove:hover{color:var(--red)}
+.tag-input{border:none;background:none;outline:none;color:var(--text-primary);font-size:.8rem;flex:1;min-width:80px;padding:2px}
+
+/* Key-value pairs */
+.kv-row{display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:6px;align-items:center}
+.kv-row input{font-family:var(--font-mono);font-size:.8rem}
+
+/* Responsive */
+@media(max-width:900px){
+  .sidebar{width:220px}
+  .preview-panel.open{width:320px}
+  .content{padding:16px}
+  .card-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .sidebar{position:fixed;left:-280px;z-index:200;height:calc(100vh - var(--topbar-height));top:var(--topbar-height);transition:left .25s ease}
+  .sidebar.mobile-open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.5)}
+  .preview-panel.open{width:100%;position:fixed;right:0;top:var(--topbar-height);height:calc(100vh - var(--topbar-height));z-index:199}
+}
+
+/* Notification toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;color:var(--text-primary);font-size:.85rem;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s ease;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:var(--green);background:rgba(166,227,161,.1)}
+.toast.error{border-color:var(--red);background:rgba(243,139,168,.1)}
+
+/* Search */
+.search-box{position:relative;flex:1;max-width:340px}
+.search-box input{width:100%;padding:6px 12px 6px 32px;background:var(--bg-surface);border:1px solid transparent;border-radius:var(--radius);color:var(--text-primary);font-size:.8rem}
+.search-box input:focus{border-color:var(--border-focus)}
+.search-box .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem}
+
+/* Tab bar inside content */
+.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{padding:8px 16px;font-size:.8rem;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all var(--transition)}
+.tab-btn:hover{color:var(--text-primary)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Status bar */
+.statusbar{height:24px;background:var(--bg-tertiary);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;font-size:.7rem;color:var(--text-muted);gap:16px;flex-shrink:0}
+
+/* File drop overlay */
+.drop-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,27,.9);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--accent);font-size:1.2rem;font-weight:600}
+.drop-overlay.active{display:flex}
+.drop-overlay .drop-icon{font-size:3rem}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      OpenClaw Config Editor
+    </div>
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search settings... (Ctrl+K)" />
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json">⬆ Import</button>
+      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json">⬇ Export</button>
+      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard">📋 Copy</button>
+      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">{ }</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <!-- Main Content -->
+    <main class="content" id="content">
+      <div class="empty-state">
+        <div class="icon">⚙️</div>
+        <p>Select a section from the sidebar to begin editing</p>
+      </div>
+    </main>
+
+    <!-- JSON Preview Panel -->
+    <aside class="preview-panel" id="previewPanel">
+      <div class="preview-header">
+        <span>{ } Live JSON Preview</span>
+        <button class="btn btn-sm btn-ghost" onclick="togglePreview()">✕</button>
+      </div>
+      <pre id="previewContent"></pre>
+    </aside>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="statusbar">
+    <span id="statusModified">No changes</span>
+    <span id="statusSection">—</span>
+    <span style="margin-left:auto">OpenClaw Configuration Editor v1.0</span>
+  </div>
+</div>
+
+<!-- File Input (hidden) -->
+<input type="file" id="fileInput" accept=".json,.json5" style="display:none" onchange="handleFileImport(event)"/>
+
+<!-- Drop Overlay -->
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-icon">📂</div>
+  Drop openclaw.json here
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG SCHEMA DEFINITION
+// ============================================================
+
+const SCHEMA = {
+  meta: {
+    label: 'Meta',
+    icon: '📋',
+    description: 'General configuration metadata.',
+    fields: {
+      '$schema': { type: 'text', label: 'Schema URL', default: '', hint: 'JSON schema URL for editor validation.' },
+      version: { type: 'number', label: 'Config Version', default: 1, hint: 'Configuration schema version.' },
+    }
+  },
+  browser: {
+    label: 'Browser',
+    icon: '🌐',
+    description: 'Headless browser settings for web scraping and automation.',
+    fields: {
+      'browser.headless': { type: 'toggle', label: 'Headless Mode', default: true, hint: 'Run browser in headless mode (no GUI).' },
+      'browser.timeout': { type: 'number', label: 'Timeout (ms)', default: 30000, hint: 'Default page load timeout in milliseconds.' },
+      'browser.userAgent': { type: 'text', label: 'User Agent', default: '', hint: 'Custom user agent string.' },
+    }
+  },
+  secrets: {
+    label: 'Secrets',
+    icon: '🔑',
+    description: 'Secret provider configuration for API keys and credentials.',
+    fields: {
+      'secrets.provider': { type: 'select', label: 'Provider', default: 'env', options: ['env','file','vault','bitwarden','1password'], hint: 'Secret backend provider.', security: true },
+      'secrets.path': { type: 'text', label: 'Path / URL', default: '', hint: 'Path or URL for the secret store.' },
+    }
+  },
+  auth: {
+    label: 'Auth',
+    icon: '🔒',
+    description: 'Authentication and authorization settings.',
+    fields: {
+      'auth.enabled': { type: 'toggle', label: 'Auth Enabled', default: true, hint: 'Enable authentication on the gateway.', security: true },
+      'auth.provider': { type: 'select', label: 'Provider', default: 'token', options: ['token','basic','oidc','none'], hint: 'Authentication provider.', security: true },
+      'auth.token': { type: 'secretref', label: 'Auth Token', hint: 'Token for API authentication (SecretRef).', security: true },
+      'auth.allowedOrigins': { type: 'array', label: 'Allowed Origins', default: [], hint: 'CORS allowed origins. Use ["*"] for all (insecure).', security: true },
+    }
+  },
+  models: {
+    label: 'Models',
+    icon: '🧠',
+    description: 'AI model provider configuration and routing.',
+    subsections: {
+      'models.providers': {
+        label: 'Providers',
+        description: 'Configure AI model providers.',
+      },
+      'models.routing': {
+        label: 'Routing',
+        description: 'Model routing and fallback rules.',
+      }
+    },
+    fields: {
+      'models.default': { type: 'text', label: 'Default Model', default: '', hint: 'Default model identifier (e.g. "openai/gpt-4o").' },
+      'models.providers': { type: 'model-providers', label: 'Providers', default: [], hint: 'List of model providers.' },
+    }
+  },
+  agents: {
+    label: 'Agents',
+    icon: '🤖',
+    description: 'Agent definitions, defaults, and per-agent configuration.',
+    subsections: {
+      'agents.defaults': { label: 'Defaults', description: 'Default settings applied to all agents.' },
+      'agents.list': { label: 'Agent List', description: 'Individual agent definitions.' },
+    },
+    fields: {
+      'agents.defaults.model': { type: 'text', label: 'Default Model', default: '', hint: 'Default model for all agents.', section: 'agents.defaults' },
+      'agents.defaults.imageModel': { type: 'text', label: 'Default Image Model', default: '', hint: 'Default image analysis model.', section: 'agents.defaults' },
+      'agents.defaults.maxTokens': { type: 'number', label: 'Max Tokens', default: 4096, hint: 'Default max tokens per response.', section: 'agents.defaults' },
+      'agents.defaults.maxTurns': { type: 'number', label: 'Max Turns', default: 50, hint: 'Max conversation turns before reset.', section: 'agents.defaults' },
+      'agents.defaults.temperature': { type: 'number', label: 'Temperature', default: 0.7, hint: 'Default temperature (0-2). Lower = more deterministic.', section: 'agents.defaults', step: 0.1, min: 0, max: 2 },
+      'agents.defaults.systemPrompt': { type: 'textarea', label: 'System Prompt', default: '', hint: 'Default system prompt prepended to all agents.', section: 'agents.defaults' },
+      'agents.defaults.thinking': { type: 'select', label: 'Thinking Mode', default: 'off', options: ['off','on','adaptive','stream'], hint: 'Extended thinking mode.', section: 'agents.defaults' },
+      'agents.defaults.compaction.enabled': { type: 'toggle', label: 'Compaction', default: true, hint: 'Enable context window compaction.', section: 'agents.defaults' },
+      'agents.defaults.compaction.threshold': { type: 'number', label: 'Compaction Threshold', default: 0.8, hint: 'Context fill ratio that triggers compaction (0-1).', section: 'agents.defaults', step: 0.05, min: 0, max: 1 },
+      'agents.list': { type: 'agent-list', label: 'Agent Definitions', default: [], hint: 'List of agent configurations.' },
+    }
+  },
+  tools: {
+    label: 'Tools',
+    icon: '🔧',
+    description: 'Tool definitions and security policies.',
+    fields: {
+      'tools.security': { type: 'select', label: 'Default Security', default: 'allowlist', options: ['full','allowlist','deny'], hint: 'Default exec security policy.', security: true },
+      'tools.exec.defaultShell': { type: 'text', label: 'Default Shell', default: '/bin/bash', hint: 'Default shell for exec tool.' },
+      'tools.exec.timeout': { type: 'number', label: 'Exec Timeout (s)', default: 300, hint: 'Default exec command timeout in seconds.' },
+      'tools.exec.allowlist': { type: 'array', label: 'Exec Allowlist', default: [], hint: 'Commands allowed in allowlist security mode.' },
+      'tools.exec.denylist': { type: 'array', label: 'Exec Denylist', default: [], hint: 'Commands always denied.' },
+      'tools.sandbox.enabled': { type: 'toggle', label: 'Sandbox Enabled', default: true, hint: 'Run tools in a sandboxed container.', security: true },
+      'tools.sandbox.image': { type: 'text', label: 'Sandbox Image', default: 'openclaw/sandbox:latest', hint: 'Docker image for sandbox containers.' },
+      'tools.sandbox.memory': { type: 'text', label: 'Memory Limit', default: '512m', hint: 'Container memory limit.' },
+      'tools.sandbox.cpus': { type: 'number', label: 'CPU Limit', default: 1, hint: 'Container CPU limit.', step: 0.5 },
+      'tools.sandbox.networkMode': { type: 'select', label: 'Network Mode', default: 'bridge', options: ['bridge','host','none'], hint: 'Container network mode.', security: true },
+      'tools.sandbox.mountWorkspace': { type: 'toggle', label: 'Mount Workspace', default: true, hint: 'Mount host workspace into sandbox.' },
+    }
+  },
+  bindings: {
+    label: 'Bindings',
+    icon: '🔗',
+    description: 'Route channels and patterns to specific agents.',
+    fields: {
+      'bindings': { type: 'binding-list', label: 'Routing Rules', default: [], hint: 'Rules that bind channels/patterns to agents.' },
+    }
+  },
+  messages: {
+    label: 'Messages & TTS',
+    icon: '💬',
+    description: 'Message handling, text-to-speech, and response settings.',
+    fields: {
+      'messages.maxLength': { type: 'number', label: 'Max Message Length', default: 4000, hint: 'Maximum outgoing message length (chars).' },
+      'messages.splitLong': { type: 'toggle', label: 'Split Long Messages', default: true, hint: 'Split messages exceeding max length.' },
+      'messages.typingIndicator': { type: 'toggle', label: 'Typing Indicator', default: true, hint: 'Show typing indicator while processing.' },
+      'messages.reactions.enabled': { type: 'toggle', label: 'Reactions Enabled', default: false, hint: 'Enable emoji reactions on messages.' },
+      'messages.reactions.mode': { type: 'select', label: 'Reactions Mode', default: 'off', options: ['off','minimal','full'], hint: 'Reaction behavior mode.' },
+      'tts.enabled': { type: 'toggle', label: 'TTS Enabled', default: false, hint: 'Enable text-to-speech output.' },
+      'tts.provider': { type: 'select', label: 'TTS Provider', default: 'elevenlabs', options: ['elevenlabs','openai','system'], hint: 'TTS service provider.' },
+      'tts.voice': { type: 'text', label: 'Voice ID / Name', default: '', hint: 'Voice identifier for TTS.' },
+      'tts.apiKey': { type: 'secretref', label: 'TTS API Key', hint: 'API key for TTS provider (SecretRef).', security: true },
+    }
+  },
+  commands: {
+    label: 'Commands',
+    icon: '⌘',
+    description: 'Slash commands and custom command definitions.',
+    fields: {
+      'commands.prefix': { type: 'text', label: 'Command Prefix', default: '/', hint: 'Prefix character for slash commands.' },
+      'commands.enabled': { type: 'toggle', label: 'Commands Enabled', default: true, hint: 'Enable slash command processing.' },
+      'commands.custom': { type: 'command-list', label: 'Custom Commands', default: [], hint: 'Custom slash command definitions.' },
+    }
+  },
+  channels: {
+    label: 'Channels',
+    icon: '📡',
+    description: 'Messaging channel integrations (WhatsApp, Telegram, etc.).',
+    subsections: {
+      'channels.whatsapp': { label: 'WhatsApp', description: 'WhatsApp Business API integration.' },
+      'channels.telegram': { label: 'Telegram', description: 'Telegram Bot API integration.' },
+      'channels.discord': { label: 'Discord', description: 'Discord bot integration.' },
+      'channels.slack': { label: 'Slack', description: 'Slack app integration.' },
+    },
+    fields: {
+      // WhatsApp
+      'channels.whatsapp.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable WhatsApp channel.', section: 'channels.whatsapp' },
+      'channels.whatsapp.provider': { type: 'select', label: 'Provider', default: 'baileys', options: ['baileys','cloud-api','twilio'], hint: 'WhatsApp connection method.', section: 'channels.whatsapp' },
+      'channels.whatsapp.phoneNumber': { type: 'text', label: 'Phone Number', default: '', hint: 'WhatsApp phone number.', section: 'channels.whatsapp' },
+      'channels.whatsapp.apiToken': { type: 'secretref', label: 'API Token', hint: 'WhatsApp API token (SecretRef).', section: 'channels.whatsapp', security: true },
+      'channels.whatsapp.webhookPath': { type: 'text', label: 'Webhook Path', default: '/webhook/whatsapp', hint: 'Webhook endpoint path.', section: 'channels.whatsapp' },
+      // Telegram
+      'channels.telegram.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Telegram channel.', section: 'channels.telegram' },
+      'channels.telegram.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Telegram Bot API token (SecretRef).', section: 'channels.telegram', security: true },
+      'channels.telegram.webhookUrl': { type: 'text', label: 'Webhook URL', default: '', hint: 'Public URL for Telegram webhooks.', section: 'channels.telegram' },
+      'channels.telegram.allowedChatIds': { type: 'array', label: 'Allowed Chat IDs', default: [], hint: 'Restrict to these chat IDs. Empty = allow all.', section: 'channels.telegram', security: true },
+      'channels.telegram.polling': { type: 'toggle', label: 'Polling Mode', default: false, hint: 'Use long polling instead of webhooks.', section: 'channels.telegram' },
+      // Discord
+      'channels.discord.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Discord channel.', section: 'channels.discord' },
+      'channels.discord.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Discord bot token (SecretRef).', section: 'channels.discord', security: true },
+      'channels.discord.applicationId': { type: 'text', label: 'Application ID', default: '', hint: 'Discord application ID.', section: 'channels.discord' },
+      'channels.discord.allowedGuildIds': { type: 'array', label: 'Allowed Guild IDs', default: [], hint: 'Restrict to these guild IDs.', section: 'channels.discord', security: true },
+      'channels.discord.allowedChannelIds': { type: 'array', label: 'Allowed Channel IDs', default: [], hint: 'Restrict to these channel IDs.', section: 'channels.discord', security: true },
+      // Slack
+      'channels.slack.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Slack channel.', section: 'channels.slack' },
+      'channels.slack.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Slack bot token (SecretRef).', section: 'channels.slack', security: true },
+      'channels.slack.appToken': { type: 'secretref', label: 'App Token', hint: 'Slack app-level token for socket mode (SecretRef).', section: 'channels.slack', security: true },
+      'channels.slack.signingSecret': { type: 'secretref', label: 'Signing Secret', hint: 'Slack signing secret (SecretRef).', section: 'channels.slack', security: true },
+    }
+  },
+  gateway: {
+    label: 'Gateway',
+    icon: '🚪',
+    description: 'Gateway server configuration (HTTP, WebSocket, SSL).',
+    fields: {
+      'gateway.bind': { type: 'text', label: 'Bind Address', default: '0.0.0.0', hint: 'Address to bind the gateway server.', security: true },
+      'gateway.port': { type: 'number', label: 'Port', default: 3120, hint: 'Gateway HTTP port.' },
+      'gateway.remote.url': { type: 'text', label: 'Remote URL', default: '', hint: 'Public URL for the gateway (for webhooks).' },
+      'gateway.remote.tls': { type: 'toggle', label: 'TLS Enabled', default: true, hint: 'Enable TLS on the gateway.' },
+      'gateway.cors.enabled': { type: 'toggle', label: 'CORS Enabled', default: true, hint: 'Enable CORS on the gateway.' },
+      'gateway.cors.origins': { type: 'array', label: 'CORS Origins', default: [], hint: 'Allowed CORS origins.', security: true },
+      'gateway.rateLimit.enabled': { type: 'toggle', label: 'Rate Limiting', default: true, hint: 'Enable request rate limiting.', security: true },
+      'gateway.rateLimit.maxRequests': { type: 'number', label: 'Max Requests', default: 100, hint: 'Max requests per window.' },
+      'gateway.rateLimit.windowMs': { type: 'number', label: 'Window (ms)', default: 60000, hint: 'Rate limit time window in ms.' },
+      'gateway.trustedProxies': { type: 'array', label: 'Trusted Proxies', default: [], hint: 'Trusted proxy IPs/CIDRs for X-Forwarded-For.', security: true },
+      'gateway.websocket.enabled': { type: 'toggle', label: 'WebSocket', default: true, hint: 'Enable WebSocket connections.' },
+      'gateway.websocket.pingInterval': { type: 'number', label: 'Ping Interval (ms)', default: 30000, hint: 'WebSocket ping interval.' },
+    }
+  },
+  plugins: {
+    label: 'Plugins',
+    icon: '🧩',
+    description: 'Plugin system configuration and plugin entries.',
+    fields: {
+      'plugins.enabled': { type: 'toggle', label: 'Plugins Enabled', default: true, hint: 'Enable the plugin system.' },
+      'plugins.directory': { type: 'text', label: 'Plugin Directory', default: './plugins', hint: 'Path to plugin directory.' },
+      'plugins.entries': { type: 'plugin-list', label: 'Plugin Entries', default: [], hint: 'List of configured plugins.' },
+    }
+  },
+  acp: {
+    label: 'ACP',
+    icon: '🔄',
+    description: 'Agent Communication Protocol settings.',
+    fields: {
+      'acp.enabled': { type: 'toggle', label: 'ACP Enabled', default: false, hint: 'Enable ACP for multi-agent communication.' },
+      'acp.port': { type: 'number', label: 'ACP Port', default: 3121, hint: 'Port for ACP server.' },
+      'acp.auth.required': { type: 'toggle', label: 'Auth Required', default: true, hint: 'Require authentication for ACP.', security: true },
+      'acp.auth.token': { type: 'secretref', label: 'ACP Token', hint: 'Authentication token for ACP (SecretRef).', security: true },
+      'acp.allowedAgents': { type: 'array', label: 'Allowed Agents', default: [], hint: 'Agent IDs allowed to connect. Empty = all.', security: true },
+      'acp.maxConcurrent': { type: 'number', label: 'Max Concurrent', default: 5, hint: 'Maximum concurrent ACP sessions.' },
+      'acp.timeout': { type: 'number', label: 'Timeout (s)', default: 300, hint: 'ACP session timeout in seconds.' },
+    }
+  },
+};
+
+// ============================================================
+// STATE
+// ============================================================
+
+let config = {};
+let defaults = {};
+let modifiedKeys = new Set();
+let activeSection = null;
+let activeSubsection = null;
+let previewOpen = false;
+
+// Build defaults map
+function buildDefaults() {
+  defaults = {};
+  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
+    for (const [fieldKey, field] of Object.entries(section.fields || {})) {
+      if (field.default !== undefined) {
+        defaults[fieldKey] = JSON.parse(JSON.stringify(field.default));
+      }
+    }
+  }
+}
+
+function initConfig() {
+  config = JSON.parse(JSON.stringify(defaults));
+}
+
+// ============================================================
+// DEEP GET / SET
+// ============================================================
+
+function deepGet(obj, path) {
+  const parts = path.split('.');
+  let cur = obj;
+  for (const p of parts) {
+    if (cur == null || typeof cur !== 'object') return undefined;
+    cur = cur[p];
+  }
+  return cur;
+}
+
+function deepSet(obj, path, value) {
+  const parts = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (cur[parts[i]] === undefined || typeof cur[parts[i]] !== 'object') {
+      cur[parts[i]] = {};
+    }
+    cur = cur[parts[i]];
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+
+function deepDelete(obj, path) {
+  const parts = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (cur == null || typeof cur !== 'object') return;
+    cur = cur[parts[i]];
+  }
+  if (cur != null && typeof cur === 'object') {
+    delete cur[parts[parts.length - 1]];
+  }
+}
+
+// ============================================================
+// FLATTEN / UNFLATTEN CONFIG (for JSON export)
+// ============================================================
+
+function flattenToNested(flat) {
+  const out = {};
+  for (const [key, val] of Object.entries(flat)) {
+    if (key.startsWith('$')) {
+      out[key] = val;
+    } else {
+      deepSet(out, key, val);
+    }
+  }
+  return out;
+}
+
+function nestedToFlat(obj, prefix = '') {
+  const flat = {};
+  for (const [key, val] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (val != null && typeof val === 'object' && !Array.isArray(val)) {
+      // Check if this is a known leaf field (secretref, complex types)
+      const fieldDef = findFieldDef(path);
+      if (fieldDef && (fieldDef.type === 'secretref' || fieldDef.type === 'model-providers' || fieldDef.type === 'agent-list' || fieldDef.type === 'binding-list' || fieldDef.type === 'plugin-list' || fieldDef.type === 'command-list')) {
+        flat[path] = val;
+      } else {
+        Object.assign(flat, nestedToFlat(val, path));
+      }
+    } else {
+      flat[path] = val;
+    }
+  }
+  return flat;
+}
+
+function findFieldDef(path) {
+  for (const section of Object.values(SCHEMA)) {
+    if (section.fields && section.fields[path]) return section.fields[path];
+  }
+  return null;
+}
+
+// ============================================================
+// CONFIG VALUE MANAGEMENT
+// ============================================================
+
+function getVal(key) {
+  return deepGet(config, key);
+}
+
+function setVal(key, val) {
+  deepSet(config, key, val);
+  // Check if modified from default
+  const def = defaults[key];
+  if (JSON.stringify(val) !== JSON.stringify(def)) {
+    modifiedKeys.add(key);
+  } else {
+    modifiedKeys.delete(key);
+  }
+  updateStatusBar();
+  updatePreview();
+  updateSidebarModified();
+}
+
+// ============================================================
+// GENERATE EXPORT JSON
+// ============================================================
+
+function generateJSON() {
+  const nested = {};
+  // Walk through schema and build nested from config
+  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
+    for (const [fieldKey, fieldDef] of Object.entries(section.fields || {})) {
+      const val = deepGet(config, fieldKey);
+      if (val === undefined || val === '' || (Array.isArray(val) && val.length === 0)) continue;
+      // Skip default values unless they're meaningful
+      if (JSON.stringify(val) === JSON.stringify(fieldDef.default) && !modifiedKeys.has(fieldKey)) continue;
+      
+      if (fieldKey.startsWith('$')) {
+        nested[fieldKey] = val;
+      } else {
+        deepSet(nested, fieldKey, val);
+      }
+    }
+  }
+  
+  // Also include any unknown keys from import
+  if (config._extra) {
+    for (const [k, v] of Object.entries(config._extra)) {
+      deepSet(nested, k, v);
+    }
+  }
+  
+  return nested;
+}
+
+// ============================================================
+// UI RENDERING
+// ============================================================
+
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = '';
+  for (const [key, section] of Object.entries(SCHEMA)) {
+    const isActive = activeSection === key;
+    const hasSubs = section.subsections && Object.keys(section.subsections).length > 0;
+    const expanded = isActive ? 'expanded' : '';
+    const active = isActive ? 'active' : '';
+    
+    html += `<div class="sidebar-section">`;
+    html += `<div class="sidebar-header ${expanded} ${active}" onclick="selectSection('${key}')">`;
+    html += `<span class="icon">${section.icon}</span>`;
+    html += `<span>${section.label}</span>`;
+    if (hasSubs) html += `<span class="chevron">▶</span>`;
+    html += `</div>`;
+    
+    if (hasSubs) {
+      html += `<div class="sidebar-items">`;
+      // "General" sub for fields without a subsection
+      const hasGeneralFields = Object.values(section.fields || {}).some(f => !f.section);
+      if (hasGeneralFields) {
+        const subActive = isActive && !activeSubsection ? 'active' : '';
+        html += `<div class="sidebar-item ${subActive}" onclick="selectSubsection('${key}', null)">General</div>`;
+      }
+      for (const [subKey, sub] of Object.entries(section.subsections)) {
+        const subActive = activeSubsection === subKey ? 'active' : '';
+        // Check if any field in this subsection is modified
+        const hasModified = Object.entries(section.fields || {}).some(([fk, fd]) => fd.section === subKey && modifiedKeys.has(fk));
+        html += `<div class="sidebar-item ${subActive}" onclick="selectSubsection('${key}', '${subKey}')">`;
+        html += sub.label;
+        if (hasModified) html += `<span class="modified-dot"></span>`;
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  sidebar.innerHTML = html;
+}
+
+function selectSection(key) {
+  if (activeSection === key && !SCHEMA[key].subsections) {
+    // Already selected, do nothing
+    return;
+  }
+  activeSection = key;
+  activeSubsection = null;
+  renderSidebar();
+  renderContent();
+}
+
+function selectSubsection(sectionKey, subKey) {
+  activeSection = sectionKey;
+  activeSubsection = subKey;
+  renderSidebar();
+  renderContent();
+}
+
+function renderContent() {
+  const content = document.getElementById('content');
+  if (!activeSection) {
+    content.innerHTML = `<div class="empty-state"><div class="icon">⚙️</div><p>Select a section from the sidebar to begin editing</p></div>`;
+    return;
+  }
+  
+  const section = SCHEMA[activeSection];
+  let html = '';
+  
+  // Section header
+  html += `<div class="section-title">${section.icon} ${section.label}</div>`;
+  html += `<div class="section-desc">${section.description}</div>`;
+  
+  // If has subsections, render tab bar
+  if (section.subsections) {
+    html += `<div class="tab-bar">`;
+    const hasGeneralFields = Object.values(section.fields || {}).some(f => !f.section);
+    if (hasGeneralFields) {
+      const cls = !activeSubsection ? 'active' : '';
+      html += `<button class="tab-btn ${cls}" onclick="selectSubsection('${activeSection}', null)">General</button>`;
+    }
+    for (const [subKey, sub] of Object.entries(section.subsections)) {
+      const cls = activeSubsection === subKey ? 'active' : '';
+      html += `<button class="tab-btn ${cls}" onclick="selectSubsection('${activeSection}', '${subKey}')">${sub.label}</button>`;
+    }
+    html += `</div>`;
+  }
+  
+  // Filter fields for current subsection
+  const fields = Object.entries(section.fields || {}).filter(([key, fd]) => {
+    if (section.subsections) {
+      if (activeSubsection) return fd.section === activeSubsection;
+      return !fd.section;
+    }
+    return true;
+  });
+  
+  // Render fields
+  for (const [fieldKey, fieldDef] of fields) {
+    html += renderField(fieldKey, fieldDef);
+  }
+  
+  content.innerHTML = html;
+  updateStatusBar();
+}
+
+function renderField(key, def) {
+  // Complex types
+  if (def.type === 'agent-list') return renderAgentList();
+  if (def.type === 'binding-list') return renderBindingList();
+  if (def.type === 'plugin-list') return renderPluginList();
+  if (def.type === 'command-list') return renderCommandList();
+  if (def.type === 'model-providers') return renderModelProviders();
+  
+  const modified = modifiedKeys.has(key);
+  let badges = '';
+  if (def.type === 'secretref') badges += `<span class="badge badge-secret">SecretRef</span>`;
+  if (def.security) badges += `<span class="badge badge-security">Security</span>`;
+  if (modified) badges += `<span class="badge badge-changed">Changed</span>`;
+  const req = def.required ? `<span class="required">*</span>` : '';
+  
+  let html = `<div class="field-group" id="field-${key.replace(/\./g, '-')}">`;
+  html += `<div class="field-label">${def.label} ${req} ${badges}</div>`;
+  
+  const val = getVal(key);
+  const modCls = modified ? 'modified' : '';
+  
+  switch (def.type) {
+    case 'text':
+    case 'password':
+      html += `<input type="${def.type}" class="${modCls}" value="${escHtml(val || '')}" placeholder="${escHtml(def.default || '')}" onchange="setVal('${key}', this.value)" />`;
+      break;
+    
+    case 'number':
+      const step = def.step || 1;
+      const min = def.min !== undefined ? `min="${def.min}"` : '';
+      const max = def.max !== undefined ? `max="${def.max}"` : '';
+      html += `<input type="number" class="${modCls}" value="${val !== undefined ? val : ''}" placeholder="${def.default}" step="${step}" ${min} ${max} onchange="setVal('${key}', parseFloat(this.value))" />`;
+      break;
+    
+    case 'toggle':
+      const checked = val ? 'checked' : '';
+      html += `<div class="toggle-wrap">`;
+      html += `<label class="toggle"><input type="checkbox" ${checked} onchange="setVal('${key}', this.checked)"><span class="slider"></span></label>`;
+      html += `<span class="toggle-label">${val ? 'Enabled' : 'Disabled'}</span>`;
+      html += `</div>`;
+      break;
+    
+    case 'select':
+      html += `<select class="${modCls}" onchange="setVal('${key}', this.value)">`;
+      for (const opt of (def.options || [])) {
+        const sel = val === opt ? 'selected' : '';
+        html += `<option value="${opt}" ${sel}>${opt}</option>`;
+      }
+      html += `</select>`;
+      break;
+    
+    case 'textarea':
+      html += `<textarea class="${modCls}" rows="4" placeholder="${escHtml(def.default || '')}" onchange="setVal('${key}', this.value)">${escHtml(val || '')}</textarea>`;
+      break;
+    
+    case 'array':
+      html += renderArrayField(key, val || []);
+      break;
+    
+    case 'secretref':
+      html += renderSecretRef(key, val || {});
+      break;
+  }
+  
+  if (def.hint) html += `<div class="field-hint">${def.hint}</div>`;
+  
+  // Security warning for permissive values
+  if (def.security && val !== undefined) {
+    const warning = getSecurityWarning(key, val);
+    if (warning) html += `<div class="field-hint" style="color:var(--red)">⚠️ ${warning}</div>`;
+  }
+  
+  html += `</div>`;
+  return html;
+}
+
+function renderArrayField(key, arr) {
+  let html = `<div class="array-field" id="array-${key.replace(/\./g, '-')}">`;
+  arr.forEach((item, i) => {
+    html += `<div class="array-item">`;
+    html += `<input type="text" value="${escHtml(String(item))}" onchange="updateArrayItem('${key}', ${i}, this.value)" />`;
+    html += `<button class="btn-remove" onclick="removeArrayItem('${key}', ${i})">✕</button>`;
+    html += `</div>`;
+  });
+  html += `<button class="btn btn-sm array-add" onclick="addArrayItem('${key}')">+ Add</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function renderSecretRef(key, val) {
+  if (typeof val === 'string') {
+    // Plain string value - offer to convert to SecretRef
+    let html = `<div>`;
+    html += `<input type="text" value="${escHtml(val)}" placeholder="Plain value or convert to SecretRef" onchange="setVal('${key}', this.value)" />`;
+    html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToSecretRef('${key}')">🔐 Convert to SecretRef</button>`;
+    html += `</div>`;
+    return html;
+  }
+  let html = `<div class="secretref-fields">`;
+  html += `<input type="text" value="${escHtml(val.source || '')}" placeholder="source (env, vault...)" onchange="updateSecretRef('${key}', 'source', this.value)" />`;
+  html += `<input type="text" value="${escHtml(val.provider || '')}" placeholder="provider" onchange="updateSecretRef('${key}', 'provider', this.value)" />`;
+  html += `<input type="text" value="${escHtml(val.id || '')}" placeholder="secret id / key name" onchange="updateSecretRef('${key}', 'id', this.value)" />`;
+  html += `</div>`;
+  html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToPlainValue('${key}')">📝 Use plain value</button>`;
+  return html;
+}
+
+// ============================================================
+// AGENT LIST EDITOR
+// ============================================================
+
+function renderAgentList() {
+  const agents = getVal('agents.list') || [];
+  let html = `<div id="agent-list-container">`;
+  
+  agents.forEach((agent, i) => {
+    html += `<div class="card" id="agent-card-${i}">`;
+    html += `<div class="card-header">`;
+    html += `<h4>🤖 ${agent.id || `Agent ${i + 1}`}</h4>`;
+    html += `<div style="display:flex;gap:6px">`;
+    html += `<button class="btn btn-sm" onclick="duplicateAgent(${i})" data-tooltip="Duplicate agent">📄</button>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeAgent(${i})">✕ Remove</button>`;
+    html += `</div>`;
+    html += `</div>`;
+    html += `<div class="card-grid">`;
+    html += cardField('ID', 'text', agent.id || '', `updateAgent(${i},'id',this.value)`, 'Unique agent identifier', true);
+    html += cardField('Label', 'text', agent.label || '', `updateAgent(${i},'label',this.value)`, 'Display name');
+    html += cardField('Model', 'text', agent.model || '', `updateAgent(${i},'model',this.value)`, 'Model override (e.g. openai/gpt-4o)');
+    html += cardField('Image Model', 'text', agent.imageModel || '', `updateAgent(${i},'imageModel',this.value)`, 'Image analysis model override');
+    html += cardField('Max Tokens', 'number', agent.maxTokens || '', `updateAgent(${i},'maxTokens',parseInt(this.value))`, 'Max tokens override');
+    html += cardField('Temperature', 'number', agent.temperature !== undefined ? agent.temperature : '', `updateAgent(${i},'temperature',parseFloat(this.value))`, '0-2', false, 0.1);
+    html += cardField('System Prompt', 'textarea', agent.systemPrompt || '', `updateAgent(${i},'systemPrompt',this.value)`, 'Agent-specific system prompt', false, null, true);
+    html += cardField('Sandbox', 'text', agent.sandbox || '', `updateAgent(${i},'sandbox',this.value)`, 'Sandbox profile / path');
+    html += cardField('Workspace', 'text', agent.workspace || '', `updateAgent(${i},'workspace',this.value)`, 'Workspace directory');
+    
+    // Thinking mode
+    html += `<div class="field-group">`;
+    html += `<div class="field-label">Thinking</div>`;
+    html += `<select onchange="updateAgent(${i},'thinking',this.value)">`;
+    for (const opt of ['','off','on','adaptive','stream']) {
+      const sel = agent.thinking === opt ? 'selected' : '';
+      html += `<option value="${opt}" ${sel}>${opt || '(inherit default)'}</option>`;
+    }
+    html += `</select></div>`;
+    
+    // Allowed channels
+    html += `<div class="field-group">`;
+    html += `<div class="field-label">Allowed Channels</div>`;
+    html += renderInlineArray(`agent-${i}-channels`, agent.allowedChannels || [], (arr) => { updateAgent(i, 'allowedChannels', arr); });
+    html += `</div>`;
+    
+    html += `</div>`; // card-grid
+    html += `</div>`; // card
+  });
+  
+  html += `<button class="btn" onclick="addAgent()">+ Add Agent</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function cardField(label, type, value, onchange, hint, required, step, fullWidth) {
+  const fwClass = fullWidth ? 'full-width' : '';
+  let html = `<div class="field-group ${fwClass}">`;
+  html += `<div class="field-label">${label}${required ? ' <span class="required">*</span>' : ''}</div>`;
+  if (type === 'textarea') {
+    html += `<textarea rows="3" onchange="${onchange}">${escHtml(value)}</textarea>`;
+  } else if (type === 'number') {
+    html += `<input type="number" value="${value}" step="${step || 1}" onchange="${onchange}" />`;
+  } else {
+    html += `<input type="text" value="${escHtml(value)}" onchange="${onchange}" />`;
+  }
+  if (hint) html += `<div class="field-hint">${hint}</div>`;
+  html += `</div>`;
+  return html;
+}
+
+function renderInlineArray(id, arr, updateFn) {
+  // Store callback globally
+  window['__arrayCallback_' + id] = updateFn;
+  let html = `<div class="array-field" id="inline-array-${id}">`;
+  arr.forEach((item, i) => {
+    html += `<div class="array-item"><input type="text" value="${escHtml(String(item))}" onchange="updateInlineArray('${id}', ${i}, this.value)" /><button class="btn-remove" onclick="removeInlineArrayItem('${id}', ${i})">✕</button></div>`;
+  });
+  html += `<button class="btn btn-sm array-add" onclick="addInlineArrayItem('${id}')">+ Add</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function addAgent() {
+  const agents = getVal('agents.list') || [];
+  agents.push({ id: `agent-${agents.length + 1}`, label: '', model: '' });
+  setVal('agents.list', agents);
+  renderContent();
+}
+
+function removeAgent(i) {
+  const agents = getVal('agents.list') || [];
+  agents.splice(i, 1);
+  setVal('agents.list', agents);
+  renderContent();
+}
+
+function duplicateAgent(i) {
+  const agents = getVal('agents.list') || [];
+  const copy = JSON.parse(JSON.stringify(agents[i]));
+  copy.id = copy.id + '-copy';
+  agents.splice(i + 1, 0, copy);
+  setVal('agents.list', agents);
+  renderContent();
+}
+
+function updateAgent(i, key, val) {
+  const agents = getVal('agents.list') || [];
+  if (agents[i]) {
+    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) {
+      delete agents[i][key];
+    } else {
+      agents[i][key] = val;
+    }
+    setVal('agents.list', agents);
+  }
+}
+
+// ============================================================
+// BINDING LIST EDITOR
+// ============================================================
+
+function renderBindingList() {
+  const bindings = getVal('bindings') || [];
+  let html = `<div id="binding-list-container">`;
+  
+  bindings.forEach((b, i) => {
+    html += `<div class="card">`;
+    html += `<div class="card-header">`;
+    html += `<h4>🔗 Rule ${i + 1}${b.label ? ' — ' + escHtml(b.label) : ''}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeBinding(${i})">✕ Remove</button>`;
+    html += `</div>`;
+    html += `<div class="card-grid">`;
+    html += cardField('Label', 'text', b.label || '', `updateBinding(${i},'label',this.value)`, 'Descriptive label for this rule');
+    html += cardField('Agent', 'text', b.agent || '', `updateBinding(${i},'agent',this.value)`, 'Target agent ID', true);
+    html += cardField('Channel', 'text', b.channel || '', `updateBinding(${i},'channel',this.value)`, 'Channel type (telegram, whatsapp, discord...)');
+    html += cardField('Chat ID', 'text', b.chatId || '', `updateBinding(${i},'chatId',this.value)`, 'Specific chat/group ID');
+    html += cardField('Pattern', 'text', b.pattern || '', `updateBinding(${i},'pattern',this.value)`, 'Regex pattern to match messages');
+    html += cardField('Priority', 'number', b.priority !== undefined ? b.priority : '', `updateBinding(${i},'priority',parseInt(this.value))`, 'Rule priority (higher = checked first)');
+    html += `</div></div>`;
+  });
+  
+  html += `<button class="btn" onclick="addBinding()">+ Add Binding Rule</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function addBinding() {
+  const bindings = getVal('bindings') || [];
+  bindings.push({ agent: '', channel: '', label: '' });
+  setVal('bindings', bindings);
+  renderContent();
+}
+
+function removeBinding(i) {
+  const bindings = getVal('bindings') || [];
+  bindings.splice(i, 1);
+  setVal('bindings', bindings);
+  renderContent();
+}
+
+function updateBinding(i, key, val) {
+  const bindings = getVal('bindings') || [];
+  if (bindings[i]) {
+    if (val === '' || val === undefined) delete bindings[i][key];
+    else bindings[i][key] = val;
+    setVal('bindings', bindings);
+  }
+}
+
+// ============================================================
+// PLUGIN LIST EDITOR
+// ============================================================
+
+function renderPluginList() {
+  const plugins = getVal('plugins.entries') || [];
+  let html = `<div id="plugin-list-container">`;
+  
+  plugins.forEach((p, i) => {
+    html += `<div class="card">`;
+    html += `<div class="card-header">`;
+    html += `<h4>🧩 ${p.name || `Plugin ${i + 1}`}</h4>`;
+    html += `<div style="display:flex;gap:6px;align-items:center">`;
+    const checked = p.enabled !== false ? 'checked' : '';
+    html += `<label class="toggle"><input type="checkbox" ${checked} onchange="updatePlugin(${i},'enabled',this.checked)"><span class="slider"></span></label>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removePlugin(${i})">✕</button>`;
+    html += `</div></div>`;
+    html += `<div class="card-grid">`;
+    html += cardField('Name', 'text', p.name || '', `updatePlugin(${i},'name',this.value)`, 'Plugin identifier', true);
+    html += cardField('Package', 'text', p.package || '', `updatePlugin(${i},'package',this.value)`, 'npm package or local path');
+    html += `<div class="field-group full-width">`;
+    html += `<div class="field-label">Config (JSON)</div>`;
+    html += `<textarea rows="3" onchange="updatePluginConfig(${i}, this.value)">${escHtml(JSON.stringify(p.config || {}, null, 2))}</textarea>`;
+    html += `<div class="field-hint">Plugin-specific configuration as JSON object.</div>`;
+    html += `</div>`;
+    html += `</div></div>`;
+  });
+  
+  html += `<button class="btn" onclick="addPlugin()">+ Add Plugin</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function addPlugin() {
+  const plugins = getVal('plugins.entries') || [];
+  plugins.push({ name: '', package: '', enabled: true, config: {} });
+  setVal('plugins.entries', plugins);
+  renderContent();
+}
+
+function removePlugin(i) {
+  const plugins = getVal('plugins.entries') || [];
+  plugins.splice(i, 1);
+  setVal('plugins.entries', plugins);
+  renderContent();
+}
+
+function updatePlugin(i, key, val) {
+  const plugins = getVal('plugins.entries') || [];
+  if (plugins[i]) {
+    plugins[i][key] = val;
+    setVal('plugins.entries', plugins);
+    // Only re-render for name changes (header display)
+    if (key === 'name') renderContent();
+  }
+}
+
+function updatePluginConfig(i, jsonStr) {
+  const plugins = getVal('plugins.entries') || [];
+  try {
+    plugins[i].config = JSON.parse(jsonStr);
+    setVal('plugins.entries', plugins);
+  } catch (e) {
+    // Invalid JSON - ignore until valid
+  }
+}
+
+// ============================================================
+// COMMAND LIST EDITOR
+// ============================================================
+
+function renderCommandList() {
+  const commands = getVal('commands.custom') || [];
+  let html = `<div>`;
+  
+  commands.forEach((cmd, i) => {
+    html += `<div class="card">`;
+    html += `<div class="card-header">`;
+    html += `<h4>⌘ /${cmd.name || '...'}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeCommand(${i})">✕</button>`;
+    html += `</div>`;
+    html += `<div class="card-grid">`;
+    html += cardField('Name', 'text', cmd.name || '', `updateCommand(${i},'name',this.value)`, 'Command name (without prefix)', true);
+    html += cardField('Description', 'text', cmd.description || '', `updateCommand(${i},'description',this.value)`, 'Help text for the command');
+    html += cardField('Action', 'textarea', cmd.action || '', `updateCommand(${i},'action',this.value)`, 'Action to execute (script, agent, etc.)', false, null, true);
+    html += `</div></div>`;
+  });
+  
+  html += `<button class="btn" onclick="addCommand()">+ Add Command</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function addCommand() {
+  const commands = getVal('commands.custom') || [];
+  commands.push({ name: '', description: '', action: '' });
+  setVal('commands.custom', commands);
+  renderContent();
+}
+
+function removeCommand(i) {
+  const commands = getVal('commands.custom') || [];
+  commands.splice(i, 1);
+  setVal('commands.custom', commands);
+  renderContent();
+}
+
+function updateCommand(i, key, val) {
+  const commands = getVal('commands.custom') || [];
+  if (commands[i]) {
+    commands[i][key] = val;
+    setVal('commands.custom', commands);
+    if (key === 'name') renderContent();
+  }
+}
+
+// ============================================================
+// MODEL PROVIDERS EDITOR
+// ============================================================
+
+function renderModelProviders() {
+  const providers = getVal('models.providers') || [];
+  let html = `<div>`;
+  
+  providers.forEach((p, i) => {
+    html += `<div class="card">`;
+    html += `<div class="card-header">`;
+    html += `<h4>🧠 ${p.name || p.type || `Provider ${i + 1}`}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeProvider(${i})">✕</button>`;
+    html += `</div>`;
+    html += `<div class="card-grid">`;
+    html += cardField('Name', 'text', p.name || '', `updateProvider(${i},'name',this.value)`, 'Provider identifier', true);
+    html += `<div class="field-group"><div class="field-label">Type</div><select onchange="updateProvider(${i},'type',this.value)">`;
+    for (const t of ['openai','anthropic','openrouter','azure','google','ollama','litellm','custom']) {
+      const sel = p.type === t ? 'selected' : '';
+      html += `<option value="${t}" ${sel}>${t}</option>`;
+    }
+    html += `</select></div>`;
+    html += cardField('Base URL', 'text', p.baseUrl || '', `updateProvider(${i},'baseUrl',this.value)`, 'API base URL');
+    html += `<div class="field-group"><div class="field-label">API Key <span class="badge badge-secret">SecretRef</span></div>`;
+    html += renderProviderSecretRef(i, p.apiKey || {});
+    html += `</div>`;
+    html += cardField('Model Prefix', 'text', p.prefix || '', `updateProvider(${i},'prefix',this.value)`, 'Prefix for model routing (e.g. "openai/")');
+    // Fallbacks as array
+    html += `<div class="field-group full-width"><div class="field-label">Fallback Models</div>`;
+    html += renderInlineArray(`provider-${i}-fallbacks`, p.fallbacks || [], (arr) => { updateProvider(i, 'fallbacks', arr); });
+    html += `<div class="field-hint">Model IDs to try if primary model fails.</div></div>`;
+    html += `</div></div>`;
+  });
+  
+  html += `<button class="btn" onclick="addProvider()">+ Add Provider</button>`;
+  html += `</div>`;
+  return html;
+}
+
+function renderProviderSecretRef(i, val) {
+  if (typeof val === 'string') {
+    return `<input type="text" value="${escHtml(val)}" onchange="updateProvider(${i},'apiKey',this.value)" placeholder="API key or SecretRef" />`;
+  }
+  let html = `<div class="secretref-fields">`;
+  html += `<input type="text" value="${escHtml(val.source || '')}" placeholder="source" onchange="updateProviderSecretRef(${i},'source',this.value)" />`;
+  html += `<input type="text" value="${escHtml(val.provider || '')}" placeholder="provider" onchange="updateProviderSecretRef(${i},'provider',this.value)" />`;
+  html += `<input type="text" value="${escHtml(val.id || '')}" placeholder="id" onchange="updateProviderSecretRef(${i},'id',this.value)" />`;
+  html += `</div>`;
+  return html;
+}
+
+function addProvider() {
+  const providers = getVal('models.providers') || [];
+  providers.push({ name: '', type: 'openai', baseUrl: '', apiKey: { source: 'env', provider: '', id: '' } });
+  setVal('models.providers', providers);
+  renderContent();
+}
+
+function removeProvider(i) {
+  const providers = getVal('models.providers') || [];
+  providers.splice(i, 1);
+  setVal('models.providers', providers);
+  renderContent();
+}
+
+function updateProvider(i, key, val) {
+  const providers = getVal('models.providers') || [];
+  if (providers[i]) {
+    if (val === '' && key !== 'name' && key !== 'type') delete providers[i][key];
+    else providers[i][key] = val;
+    setVal('models.providers', providers);
+    if (key === 'name' || key === 'type') renderContent();
+  }
+}
+
+function updateProviderSecretRef(i, field, val) {
+  const providers = getVal('models.providers') || [];
+  if (providers[i]) {
+    if (!providers[i].apiKey || typeof providers[i].apiKey === 'string') {
+      providers[i].apiKey = {};
+    }
+    providers[i].apiKey[field] = val;
+    setVal('models.providers', providers);
+  }
+}
+
+// ============================================================
+// ARRAY FIELD HELPERS
+// ============================================================
+
+function addArrayItem(key) {
+  const arr = getVal(key) || [];
+  arr.push('');
+  setVal(key, arr);
+  renderContent();
+}
+
+function removeArrayItem(key, i) {
+  const arr = getVal(key) || [];
+  arr.splice(i, 1);
+  setVal(key, arr);
+  renderContent();
+}
+
+function updateArrayItem(key, i, val) {
+  const arr = getVal(key) || [];
+  arr[i] = val;
+  setVal(key, arr);
+}
+
+// Inline array helpers (for arrays inside cards)
+function getInlineArrayData(id) {
+  // Parse from DOM
+  const container = document.getElementById('inline-array-' + id);
+  if (!container) return [];
+  const inputs = container.querySelectorAll('.array-item input');
+  return Array.from(inputs).map(inp => inp.value);
+}
+
+function addInlineArrayItem(id) {
+  const arr = getInlineArrayData(id);
+  arr.push('');
+  if (window['__arrayCallback_' + id]) {
+    window['__arrayCallback_' + id](arr);
+  }
+  renderContent();
+}
+
+function removeInlineArrayItem(id, i) {
+  const arr = getInlineArrayData(id);
+  arr.splice(i, 1);
+  if (window['__arrayCallback_' + id]) {
+    window['__arrayCallback_' + id](arr);
+  }
+  renderContent();
+}
+
+function updateInlineArray(id, i, val) {
+  const arr = getInlineArrayData(id);
+  arr[i] = val;
+  if (window['__arrayCallback_' + id]) {
+    window['__arrayCallback_' + id](arr);
+  }
+}
+
+// ============================================================
+// SECRETREF HELPERS
+// ============================================================
+
+function updateSecretRef(key, field, val) {
+  let ref = getVal(key) || {};
+  if (typeof ref === 'string') ref = {};
+  ref[field] = val;
+  setVal(key, ref);
+}
+
+function convertToSecretRef(key) {
+  setVal(key, { source: 'env', provider: '', id: '' });
+  renderContent();
+}
+
+function convertToPlainValue(key) {
+  setVal(key, '');
+  renderContent();
+}
+
+// ============================================================
+// SECURITY WARNINGS
+// ============================================================
+
+function getSecurityWarning(key, val) {
+  if (key === 'gateway.bind' && val === '0.0.0.0') return 'Binding to all interfaces exposes the gateway to all networks.';
+  if (key === 'auth.enabled' && val === false) return 'Authentication is disabled! The gateway is open to anyone.';
+  if (key === 'auth.provider' && val === 'none') return 'No authentication provider — gateway is unprotected.';
+  if (key === 'tools.security' && val === 'full') return 'Full exec access allows arbitrary command execution.';
+  if (key === 'tools.sandbox.enabled' && val === false) return 'Sandbox disabled — tools run directly on the host.';
+  if (key === 'tools.sandbox.networkMode' && val === 'host') return 'Host network mode gives container full network access.';
+  if (key === 'gateway.rateLimit.enabled' && val === false) return 'No rate limiting — vulnerable to abuse.';
+  if (key === 'acp.auth.required' && val === false) return 'ACP without auth allows any agent to connect.';
+  if (key.includes('allowedOrigins') && Array.isArray(val) && val.includes('*')) return 'Wildcard CORS origin allows requests from any domain.';
+  if (key.includes('allowedChatIds') && Array.isArray(val) && val.length === 0) return 'No chat ID restriction — all chats are allowed.';
+  if (key.includes('allowedGuildIds') && Array.isArray(val) && val.length === 0) return 'No guild restriction — all servers are allowed.';
+  if (key.includes('trustedProxies') && Array.isArray(val) && val.length === 0) return 'No trusted proxies configured.';
+  return null;
+}
+
+// ============================================================
+// IMPORT / EXPORT
+// ============================================================
+
+function importJSON() {
+  document.getElementById('fileInput').click();
+}
+
+function handleFileImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const json = JSON.parse(e.target.result);
+      loadFromJSON(json);
+      showToast('Configuration imported successfully', 'success');
+    } catch (err) {
+      showToast('Failed to parse JSON: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function loadFromJSON(json) {
+  // Reset config
+  buildDefaults();
+  initConfig();
+  modifiedKeys.clear();
+  
+  const flat = nestedToFlat(json);
+  const extra = {};
+  
+  for (const [key, val] of Object.entries(flat)) {
+    const fieldDef = findFieldDef(key);
+    if (fieldDef) {
+      deepSet(config, key, val);
+      if (JSON.stringify(val) !== JSON.stringify(fieldDef.default)) {
+        modifiedKeys.add(key);
+      }
+    } else {
+      // Unknown key — store as extra
+      extra[key] = val;
+    }
+  }
+  
+  if (Object.keys(extra).length > 0) {
+    config._extra = extra;
+  }
+  
+  renderSidebar();
+  renderContent();
+  updatePreview();
+  updateStatusBar();
+}
+
+function exportJSON() {
+  const json = generateJSON();
+  const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'openclaw.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Configuration exported as openclaw.json', 'success');
+}
+
+function copyToClipboard() {
+  const json = generateJSON();
+  const text = JSON.stringify(json, null, 2);
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('JSON copied to clipboard', 'success');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('JSON copied to clipboard', 'success');
+  });
+}
+
+// ============================================================
+// PREVIEW PANEL
+// ============================================================
+
+function togglePreview() {
+  previewOpen = !previewOpen;
+  const panel = document.getElementById('previewPanel');
+  const btn = document.getElementById('togglePreview');
+  panel.classList.toggle('open', previewOpen);
+  btn.classList.toggle('active', previewOpen);
+  if (previewOpen) updatePreview();
+}
+
+function updatePreview() {
+  if (!previewOpen) return;
+  const json = generateJSON();
+  const el = document.getElementById('previewContent');
+  el.textContent = JSON.stringify(json, null, 2);
+}
+
+// ============================================================
+// STATUS BAR
+// ============================================================
+
+function updateStatusBar() {
+  const count = modifiedKeys.size;
+  document.getElementById('statusModified').textContent = count > 0 ? `${count} modified field${count > 1 ? 's' : ''}` : 'No changes';
+  document.getElementById('statusSection').textContent = activeSection ? SCHEMA[activeSection].label : '—';
+}
+
+function updateSidebarModified() {
+  // Just re-render sidebar for modified indicators
+  renderSidebar();
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+function setupSearch() {
+  const input = document.getElementById('searchInput');
+  input.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    if (!query) {
+      renderContent();
+      return;
+    }
+    searchAndHighlight(query);
+  });
+  
+  // Ctrl+K shortcut
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
+  });
+}
+
+function searchAndHighlight(query) {
+  const results = [];
+  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
+    for (const [fieldKey, fieldDef] of Object.entries(section.fields || {})) {
+      const searchable = `${fieldDef.label} ${fieldKey} ${fieldDef.hint || ''} ${section.label}`.toLowerCase();
+      if (searchable.includes(query)) {
+        results.push({ sectionKey, fieldKey, fieldDef, sectionLabel: section.label });
+      }
+    }
+  }
+  
+  const content = document.getElementById('content');
+  if (results.length === 0) {
+    content.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>No fields matching "${escHtml(query)}"</p></div>`;
+    return;
+  }
+  
+  let html = `<div class="section-title">🔍 Search Results</div>`;
+  html += `<div class="section-desc">${results.length} field${results.length > 1 ? 's' : ''} found</div>`;
+  
+  for (const r of results) {
+    html += `<div style="margin-bottom:4px;font-size:.75rem;color:var(--text-muted);cursor:pointer" onclick="selectSection('${r.sectionKey}')">${SCHEMA[r.sectionKey].icon} ${r.sectionLabel} › ${r.fieldDef.section ? SCHEMA[r.sectionKey].subsections?.[r.fieldDef.section]?.label || '' : 'General'}</div>`;
+    html += renderField(r.fieldKey, r.fieldDef);
+    html += `<hr class="section-divider" style="margin:16px 0">`;
+  }
+  
+  content.innerHTML = html;
+}
+
+// ============================================================
+// DRAG & DROP
+// ============================================================
+
+function setupDragDrop() {
+  const overlay = document.getElementById('dropOverlay');
+  let dragCounter = 0;
+  
+  document.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragCounter++;
+    overlay.classList.add('active');
+  });
+  
+  document.addEventListener('dragleave', () => {
+    dragCounter--;
+    if (dragCounter <= 0) {
+      dragCounter = 0;
+      overlay.classList.remove('active');
+    }
+  });
+  
+  document.addEventListener('dragover', (e) => e.preventDefault());
+  
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragCounter = 0;
+    overlay.classList.remove('active');
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.json')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const json = JSON.parse(ev.target.result);
+          loadFromJSON(json);
+          showToast('Configuration imported via drag & drop', 'success');
+        } catch (err) {
+          showToast('Invalid JSON file', 'error');
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      showToast('Please drop a .json file', 'error');
+    }
+  });
+}
+
+// ============================================================
+// TOAST NOTIFICATIONS
+// ============================================================
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show ' + (type || '');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+
+function escHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+buildDefaults();
+initConfig();
+renderSidebar();
+setupSearch();
+setupDragDrop();
+updatePreview();
+
+// Select first section by default
+selectSection('meta');
+</script>
+</body>
+</html>
