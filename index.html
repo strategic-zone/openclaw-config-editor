@@ -104,9 +104,9 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
 .toast.show{opacity:1;transform:translateY(0)}
 .info-i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-size:.65rem;font-weight:700;font-style:italic;font-family:Georgia,serif;cursor:help;margin-left:4px;position:relative;flex-shrink:0;transition:.15s;user-select:none}
 .info-i:hover{background:var(--accent);color:var(--bg3);border-color:var(--accent)}
-.info-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--accent);border-radius:var(--r);padding:8px 12px;font-size:.75rem;font-style:normal;font-weight:400;font-family:var(--sans);color:var(--text);white-space:normal;width:280px;max-width:90vw;z-index:200;box-shadow:var(--shadow);line-height:1.4;pointer-events:none}
-.info-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--accent)}
-.info-i:hover .info-tip{display:block}
+.info-tip{display:none;position:fixed;background:var(--bg3);border:1px solid var(--accent);border-radius:var(--r);padding:8px 12px;font-size:.75rem;font-style:normal;font-weight:400;font-family:var(--sans);color:var(--text);white-space:normal;width:280px;max-width:90vw;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.4;pointer-events:none}
+
+
 </style>
 </head>
 <body>
@@ -1121,7 +1121,24 @@ function deepSet(obj, path, val) {
   else cur[keys[keys.length - 1]] = val;
 }
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
-function lbl(f) { return f.label + (f.info ? ' <span class="info-i">i<span class="info-tip">' + escHtml(f.info) + '</span></span>' : ''); }
+function lbl(f) { return f.label + (f.info ? ' <span class="info-i" onmouseenter="showTip(this)" onmouseleave="hideTip(this)">i<span class="info-tip">' + escHtml(f.info) + '</span></span>' : ''); }
+function showTip(el) {
+  var tip = el.querySelector('.info-tip');
+  if (!tip) return;
+  tip.style.display = 'block';
+  var r = el.getBoundingClientRect();
+  var tw = 280;
+  var left = r.left + r.width/2 - tw/2;
+  if (left < 8) left = 8;
+  if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+  tip.style.left = left + 'px';
+  tip.style.top = (r.top - tip.offsetHeight - 8) + 'px';
+  if (r.top - tip.offsetHeight - 8 < 8) tip.style.top = (r.bottom + 8) + 'px';
+}
+function hideTip(el) {
+  var tip = el.querySelector('.info-tip');
+  if (tip) tip.style.display = 'none';
+}
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
