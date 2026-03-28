@@ -73,9 +73,9 @@ a:hover{text-decoration:underline}
 .btn-danger:hover{background:rgba(243,139,168,.15)}
 .btn-sm{padding:4px 10px;font-size:.75rem}
 .btn-icon{padding:6px 8px;font-size:1rem;line-height:1}
-.btn-accent{background:var(--mauve);color:var(--bg-primary);font-weight:600}.btn-accent:hover{opacity:.85}
 .btn-ghost{background:transparent;border-color:transparent}
 .btn-ghost:hover{background:var(--bg-surface)}
+.btn svg{width:14px;height:14px;flex-shrink:0}
 
 /* ===== Sidebar ===== */
 .sidebar-section{border-bottom:1px solid var(--border)}
@@ -85,7 +85,8 @@ a:hover{text-decoration:underline}
 .sidebar-header.active{color:var(--accent);background:rgba(137,180,250,.08)}
 .sidebar-header .chevron{transition:transform var(--transition);font-size:.7rem;opacity:.5;margin-left:auto}
 .sidebar-header.expanded .chevron{transform:rotate(90deg)}
-.sidebar-header .icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-header .icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-header .icon svg{width:16px;height:16px}
 .sidebar-items{display:none;padding:2px 0 6px}
 .sidebar-header.expanded+.sidebar-items{display:block}
 .sidebar-item{padding:6px 16px 6px 44px;font-size:.8rem;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
@@ -95,15 +96,23 @@ a:hover{text-decoration:underline}
 
 /* ===== Form Controls ===== */
 .section-title{font-size:1.3rem;font-weight:700;margin-bottom:4px;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-title svg{width:22px;height:22px}
 .section-desc{color:var(--text-muted);font-size:.85rem;margin-bottom:24px;line-height:1.5}
 .field-group{margin-bottom:20px}
 .field-label{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.field-label .field-icon{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.7}
+.field-label .field-icon svg{width:14px;height:14px}
 .field-label .required{color:var(--red);font-weight:700}
-.field-label .badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:3px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.field-label .badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.field-label .badge svg{width:10px;height:10px}
 .badge-secret{background:rgba(203,166,247,.15);color:var(--mauve);border:1px solid rgba(203,166,247,.3)}
 .badge-security{background:rgba(243,139,168,.12);color:var(--red);border:1px solid rgba(243,139,168,.25)}
 .badge-changed{background:rgba(250,179,135,.12);color:var(--peach);border:1px solid rgba(250,179,135,.25)}
+.badge-warning{background:rgba(243,139,168,.15);color:var(--red);border:1px solid rgba(243,139,168,.3);font-size:.65rem;padding:2px 6px;border-radius:3px;display:inline-flex;align-items:center;gap:3px;font-weight:600}
+.badge-warning svg{width:12px;height:12px}
 .field-hint{font-size:.75rem;color:var(--text-muted);margin-top:4px;line-height:1.4}
+.field-security-warning{font-size:.75rem;color:var(--red);margin-top:4px;line-height:1.4;display:flex;align-items:center;gap:4px}
+.field-security-warning svg{width:14px;height:14px;flex-shrink:0}
 input[type="text"],input[type="number"],input[type="password"],textarea,select{width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:.85rem;font-family:var(--font-sans);transition:border-color var(--transition),box-shadow var(--transition);outline:none}
 input:focus,textarea:focus,select:focus{border-color:var(--border-focus);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
 input::placeholder,textarea::placeholder{color:var(--text-muted)}
@@ -126,14 +135,16 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 .array-field{display:flex;flex-direction:column;gap:6px}
 .array-item{display:flex;align-items:center;gap:6px}
 .array-item input{flex:1}
-.array-item .btn-remove{padding:6px 8px;color:var(--red);cursor:pointer;background:none;border:1px solid transparent;border-radius:var(--radius);font-size:.9rem;transition:all var(--transition)}
+.array-item .btn-remove{padding:6px 8px;color:var(--red);cursor:pointer;background:none;border:1px solid transparent;border-radius:var(--radius);transition:all var(--transition);display:flex;align-items:center;justify-content:center}
+.array-item .btn-remove svg{width:14px;height:14px}
 .array-item .btn-remove:hover{background:rgba(243,139,168,.1);border-color:var(--red)}
 .array-add{align-self:flex-start}
 
 /* Cards */
 .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.card-header h4{font-size:.9rem;font-weight:600;color:var(--text-bright)}
+.card-header h4{font-size:.9rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:6px}
+.card-header h4 svg{width:16px;height:16px}
 .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
 .card-grid .field-group{margin-bottom:0}
 .card-grid .full-width{grid-column:1/-1}
@@ -144,7 +155,7 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 
 /* Empty state */
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
-.empty-state .icon{font-size:2rem;margin-bottom:12px}
+.empty-state svg{width:48px;height:48px;margin-bottom:12px;opacity:.5}
 
 /* Tooltip */
 [data-tooltip]{position:relative}
@@ -188,7 +199,8 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 .search-box{position:relative;flex:1;max-width:340px}
 .search-box input{width:100%;padding:6px 12px 6px 32px;background:var(--bg-surface);border:1px solid transparent;border-radius:var(--radius);color:var(--text-primary);font-size:.8rem}
 .search-box input:focus{border-color:var(--border-focus)}
-.search-box .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem}
+.search-box .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;align-items:center}
+.search-box .search-icon svg{width:14px;height:14px}
 
 /* Tab bar inside content */
 .tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px}
@@ -202,7 +214,7 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 /* File drop overlay */
 .drop-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,27,.9);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--accent);font-size:1.2rem;font-weight:600}
 .drop-overlay.active{display:flex}
-.drop-overlay .drop-icon{font-size:3rem}
+.drop-overlay svg{width:48px;height:48px}
 </style>
 </head>
 <body>
@@ -214,15 +226,14 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
       OpenClaw Config Editor
     </div>
     <div class="search-box">
-      <span class="search-icon">⌕</span>
+      <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
       <input type="text" id="searchInput" placeholder="Search settings... (Ctrl+K)" />
     </div>
     <div class="actions">
-      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json">↑ Import</button>
-      <button class="btn btn-accent" onclick="loadTemplate()" data-tooltip="Load XO One reference config as starting point">Load Template</button>
-      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json">↓ Export</button>
-      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard">Copy</button>
-      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">JSON</button>
+      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>
+      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
+      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button>
+      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">{ }</button>
     </div>
   </div>
 
@@ -233,17 +244,16 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
     <!-- Main Content -->
     <main class="content" id="content">
       <div class="empty-state">
-        <div class="icon">⚙️</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         <p>Select a section from the sidebar to begin editing</p>
-        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>Load Template</strong> to start from a reference config</p>
       </div>
     </main>
 
     <!-- JSON Preview Panel -->
     <aside class="preview-panel" id="previewPanel">
       <div class="preview-header">
-        <span>JSON Live JSON Preview</span>
-        <button class="btn btn-sm btn-ghost" onclick="togglePreview()">✕</button>
+        <span>{ } Live JSON Preview</span>
+        <button class="btn btn-sm btn-ghost" onclick="togglePreview()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <pre id="previewContent"></pre>
     </aside>
@@ -262,7 +272,7 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 
 <!-- Drop Overlay -->
 <div class="drop-overlay" id="dropOverlay">
-  <div class="drop-icon">📂</div>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
   Drop openclaw.json here
 </div>
 
@@ -271,13 +281,90 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
 
 <script>
 // ============================================================
+// SVG ICON LIBRARY — Inline, no external deps
+// ============================================================
+
+const SVG_ICONS = {
+  // Section icons (sidebar + section headers) — 16x16 default, viewBox 0 0 24 24
+  meta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  browser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  secrets: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  auth: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
+  models: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4c0 1.95-1.4 3.58-3.25 3.93L12 10v2"/><circle cx="12" cy="18" r="4"/><path d="M8 18h0"/><path d="M16 18h0"/><path d="M12 14v0"/><path d="M7.5 6.5L4 8"/><path d="M16.5 6.5L20 8"/></svg>',
+  agents: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+  tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>',
+  bindings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
+  messages: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>',
+  commands: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+  channels: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2a5.5 5.5 0 010-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a5.5 5.5 0 010 8.4"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19.1"/></svg>',
+  gateway: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+  plugins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 2H12L10.5 3.5V5H6a2 2 0 00-2 2v3.8l1.5 1.5H7v-1.5L8 9.5h8L17 10.8v1.5h1.5L20 10.8V7a2 2 0 00-2-2h-4.5V3.5L12 2h1.5"/><path d="M20 14.8V18a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.2l1.5-1.5H7v1.5L8 18.5h8l1-1.7v-1.5h1.5l1.5 1.5z"/></svg>',
+  acp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>',
+
+  // Field type icons — for form labels
+  toggle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="16" cy="12" r="3"/></svg>',
+  text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>',
+  number: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
+  array: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  select: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  secretref: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+  path: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+  url: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+  textarea: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  password: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+
+  // Utility icons
+  warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  shieldAlert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+};
+
+// Helper to get SVG icon string by name
+function icon(name, size) {
+  const svg = SVG_ICONS[name] || SVG_ICONS.settings;
+  if (!size) return svg;
+  // Inject width/height into the svg tag
+  return svg.replace('<svg ', `<svg width="${size}" height="${size}" `);
+}
+
+// Get the right field type icon based on field definition
+function fieldTypeIcon(fieldDef) {
+  // Check if it's a URL-like field
+  if (fieldDef.label && /\b(url|webhook|base\s*url|endpoint)\b/i.test(fieldDef.label)) return 'url';
+  if (fieldDef.label && /\b(path|directory|dir)\b/i.test(fieldDef.label)) return 'path';
+  // Map by type
+  const map = {
+    'toggle': 'toggle',
+    'text': 'text',
+    'number': 'number',
+    'array': 'array',
+    'select': 'select',
+    'secretref': 'secretref',
+    'textarea': 'textarea',
+    'password': 'password',
+    'model-providers': 'array',
+    'agent-list': 'array',
+    'binding-list': 'array',
+    'plugin-list': 'array',
+    'command-list': 'array',
+  };
+  return map[fieldDef.type] || 'text';
+}
+
+// ============================================================
 // CONFIG SCHEMA DEFINITION
 // ============================================================
 
 const SCHEMA = {
   meta: {
     label: 'Meta',
-    icon: '📋',
+    icon: 'meta',
     description: 'General configuration metadata.',
     fields: {
       '$schema': { type: 'text', label: 'Schema URL', default: '', hint: 'JSON schema URL for editor validation.' },
@@ -286,7 +373,7 @@ const SCHEMA = {
   },
   browser: {
     label: 'Browser',
-    icon: '☰',
+    icon: 'browser',
     description: 'Headless browser settings for web scraping and automation.',
     fields: {
       'browser.headless': { type: 'toggle', label: 'Headless Mode', default: true, hint: 'Run browser in headless mode (no GUI).' },
@@ -296,7 +383,7 @@ const SCHEMA = {
   },
   secrets: {
     label: 'Secrets',
-    icon: '⚷',
+    icon: 'secrets',
     description: 'Secret provider configuration for API keys and credentials.',
     fields: {
       'secrets.provider': { type: 'select', label: 'Provider', default: 'env', options: ['env','file','vault','bitwarden','1password'], hint: 'Secret backend provider.', security: true },
@@ -305,7 +392,7 @@ const SCHEMA = {
   },
   auth: {
     label: 'Auth',
-    icon: '🔒',
+    icon: 'auth',
     description: 'Authentication and authorization settings.',
     fields: {
       'auth.enabled': { type: 'toggle', label: 'Auth Enabled', default: true, hint: 'Enable authentication on the gateway.', security: true },
@@ -316,7 +403,7 @@ const SCHEMA = {
   },
   models: {
     label: 'Models',
-    icon: '◈',
+    icon: 'models',
     description: 'AI model provider configuration and routing.',
     subsections: {
       'models.providers': {
@@ -335,7 +422,7 @@ const SCHEMA = {
   },
   agents: {
     label: 'Agents',
-    icon: '◆',
+    icon: 'agents',
     description: 'Agent definitions, defaults, and per-agent configuration.',
     subsections: {
       'agents.defaults': { label: 'Defaults', description: 'Default settings applied to all agents.' },
@@ -356,7 +443,7 @@ const SCHEMA = {
   },
   tools: {
     label: 'Tools',
-    icon: '⚒',
+    icon: 'tools',
     description: 'Tool definitions and security policies.',
     fields: {
       'tools.security': { type: 'select', label: 'Default Security', default: 'allowlist', options: ['full','allowlist','deny'], hint: 'Default exec security policy.', security: true },
@@ -374,7 +461,7 @@ const SCHEMA = {
   },
   bindings: {
     label: 'Bindings',
-    icon: '⇋',
+    icon: 'bindings',
     description: 'Route channels and patterns to specific agents.',
     fields: {
       'bindings': { type: 'binding-list', label: 'Routing Rules', default: [], hint: 'Rules that bind channels/patterns to agents.' },
@@ -382,7 +469,7 @@ const SCHEMA = {
   },
   messages: {
     label: 'Messages & TTS',
-    icon: '💬',
+    icon: 'messages',
     description: 'Message handling, text-to-speech, and response settings.',
     fields: {
       'messages.maxLength': { type: 'number', label: 'Max Message Length', default: 4000, hint: 'Maximum outgoing message length (chars).' },
@@ -398,7 +485,7 @@ const SCHEMA = {
   },
   commands: {
     label: 'Commands',
-    icon: '⌘',
+    icon: 'commands',
     description: 'Slash commands and custom command definitions.',
     fields: {
       'commands.prefix': { type: 'text', label: 'Command Prefix', default: '/', hint: 'Prefix character for slash commands.' },
@@ -408,7 +495,7 @@ const SCHEMA = {
   },
   channels: {
     label: 'Channels',
-    icon: '⊕',
+    icon: 'channels',
     description: 'Messaging channel integrations (WhatsApp, Telegram, etc.).',
     subsections: {
       'channels.whatsapp': { label: 'WhatsApp', description: 'WhatsApp Business API integration.' },
@@ -444,7 +531,7 @@ const SCHEMA = {
   },
   gateway: {
     label: 'Gateway',
-    icon: '🚪',
+    icon: 'gateway',
     description: 'Gateway server configuration (HTTP, WebSocket, SSL).',
     fields: {
       'gateway.bind': { type: 'text', label: 'Bind Address', default: '0.0.0.0', hint: 'Address to bind the gateway server.', security: true },
@@ -463,7 +550,7 @@ const SCHEMA = {
   },
   plugins: {
     label: 'Plugins',
-    icon: '🧩',
+    icon: 'plugins',
     description: 'Plugin system configuration and plugin entries.',
     fields: {
       'plugins.enabled': { type: 'toggle', label: 'Plugins Enabled', default: true, hint: 'Enable the plugin system.' },
@@ -473,7 +560,7 @@ const SCHEMA = {
   },
   acp: {
     label: 'ACP',
-    icon: '🔄',
+    icon: 'acp',
     description: 'Agent Communication Protocol settings.',
     fields: {
       'acp.enabled': { type: 'toggle', label: 'ACP Enabled', default: false, hint: 'Enable ACP for multi-agent communication.' },
@@ -511,11 +598,6 @@ function buildDefaults() {
 }
 
 function initConfig() {
-  // Auto-load template config on first visit
-  if (typeof TEMPLATE_CONFIG !== 'undefined') {
-    loadFromJSON(TEMPLATE_CONFIG);
-    return;
-  }
   config = JSON.parse(JSON.stringify(defaults));
 }
 
@@ -668,7 +750,7 @@ function renderSidebar() {
     
     html += `<div class="sidebar-section">`;
     html += `<div class="sidebar-header ${expanded} ${active}" onclick="selectSection('${key}')">`;
-    html += `<span class="icon">${section.icon}</span>`;
+    html += `<span class="icon">${icon(section.icon)}</span>`;
     html += `<span>${section.label}</span>`;
     if (hasSubs) html += `<span class="chevron">▶</span>`;
     html += `</div>`;
@@ -718,8 +800,7 @@ function selectSubsection(sectionKey, subKey) {
 function renderContent() {
   const content = document.getElementById('content');
   if (!activeSection) {
-    content.innerHTML = `<div class="empty-state"><div class="icon">⚙️</div><p>Select a section from the sidebar to begin editing</p>
-        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>Load Template</strong> to start from a reference config</p></div>`;
+    content.innerHTML = `<div class="empty-state">${icon('settings')}<p>Select a section from the sidebar to begin editing</p></div>`;
     return;
   }
   
@@ -727,7 +808,7 @@ function renderContent() {
   let html = '';
   
   // Section header
-  html += `<div class="section-title">${section.icon} ${section.label}</div>`;
+  html += `<div class="section-title">${icon(section.icon)} ${section.label}</div>`;
   html += `<div class="section-desc">${section.description}</div>`;
   
   // If has subsections, render tab bar
@@ -772,16 +853,23 @@ function renderField(key, def) {
   if (def.type === 'model-providers') return renderModelProviders();
   
   const modified = modifiedKeys.has(key);
+  const typeIconName = fieldTypeIcon(def);
   let badges = '';
-  if (def.type === 'secretref') badges += `<span class="badge badge-secret">SecretRef</span>`;
-  if (def.security) badges += `<span class="badge badge-security">Security</span>`;
+  if (def.type === 'secretref') badges += `<span class="badge badge-secret">${icon('lock')} SecretRef</span>`;
+  if (def.security) badges += `<span class="badge badge-security">${icon('shieldAlert')} Security</span>`;
   if (modified) badges += `<span class="badge badge-changed">Changed</span>`;
   const req = def.required ? `<span class="required">*</span>` : '';
   
-  let html = `<div class="field-group" id="field-${key.replace(/\./g, '-')}">`;
-  html += `<div class="field-label">${def.label} ${req} ${badges}</div>`;
-  
+  // Check for active security warning
   const val = getVal(key);
+  const secWarning = def.security && val !== undefined ? getSecurityWarning(key, val) : null;
+  if (secWarning) {
+    badges += ` <span class="badge-warning">${icon('warning')} Permissive</span>`;
+  }
+  
+  let html = `<div class="field-group" id="field-${key.replace(/\./g, '-')}">`;
+  html += `<div class="field-label"><span class="field-icon">${icon(typeIconName)}</span> ${def.label} ${req} ${badges}</div>`;
+  
   const modCls = modified ? 'modified' : '';
   
   switch (def.type) {
@@ -830,9 +918,8 @@ function renderField(key, def) {
   if (def.hint) html += `<div class="field-hint">${def.hint}</div>`;
   
   // Security warning for permissive values
-  if (def.security && val !== undefined) {
-    const warning = getSecurityWarning(key, val);
-    if (warning) html += `<div class="field-hint" style="color:var(--red)">⚠️ ${warning}</div>`;
+  if (secWarning) {
+    html += `<div class="field-security-warning">${icon('shieldAlert')} ${secWarning}</div>`;
   }
   
   html += `</div>`;
@@ -844,10 +931,10 @@ function renderArrayField(key, arr) {
   arr.forEach((item, i) => {
     html += `<div class="array-item">`;
     html += `<input type="text" value="${escHtml(String(item))}" onchange="updateArrayItem('${key}', ${i}, this.value)" />`;
-    html += `<button class="btn-remove" onclick="removeArrayItem('${key}', ${i})">✕</button>`;
+    html += `<button class="btn-remove" onclick="removeArrayItem('${key}', ${i})">${icon('close')}</button>`;
     html += `</div>`;
   });
-  html += `<button class="btn btn-sm array-add" onclick="addArrayItem('${key}')">+ Add</button>`;
+  html += `<button class="btn btn-sm array-add" onclick="addArrayItem('${key}')">${icon('plus')} Add</button>`;
   html += `</div>`;
   return html;
 }
@@ -857,7 +944,7 @@ function renderSecretRef(key, val) {
     // Plain string value - offer to convert to SecretRef
     let html = `<div>`;
     html += `<input type="text" value="${escHtml(val)}" placeholder="Plain value or convert to SecretRef" onchange="setVal('${key}', this.value)" />`;
-    html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToSecretRef('${key}')">🔐 Convert to SecretRef</button>`;
+    html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToSecretRef('${key}')">${icon('lock')} Convert to SecretRef</button>`;
     html += `</div>`;
     return html;
   }
@@ -866,7 +953,7 @@ function renderSecretRef(key, val) {
   html += `<input type="text" value="${escHtml(val.provider || '')}" placeholder="provider" onchange="updateSecretRef('${key}', 'provider', this.value)" />`;
   html += `<input type="text" value="${escHtml(val.id || '')}" placeholder="secret id / key name" onchange="updateSecretRef('${key}', 'id', this.value)" />`;
   html += `</div>`;
-  html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToPlainValue('${key}')">📝 Use plain value</button>`;
+  html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToPlainValue('${key}')">${icon('text')} Use plain value</button>`;
   return html;
 }
 
@@ -881,10 +968,10 @@ function renderAgentList() {
   agents.forEach((agent, i) => {
     html += `<div class="card" id="agent-card-${i}">`;
     html += `<div class="card-header">`;
-    html += `<h4>🤖 ${agent.id || `Agent ${i + 1}`}</h4>`;
+    html += `<h4>${icon('agents')} ${agent.id || `Agent ${i + 1}`}</h4>`;
     html += `<div style="display:flex;gap:6px">`;
-    html += `<button class="btn btn-sm" onclick="duplicateAgent(${i})" data-tooltip="Duplicate agent">📄</button>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeAgent(${i})">✕ Remove</button>`;
+    html += `<button class="btn btn-sm" onclick="duplicateAgent(${i})" data-tooltip="Duplicate agent">${icon('copy')}</button>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeAgent(${i})">${icon('close')} Remove</button>`;
     html += `</div>`;
     html += `</div>`;
     html += `<div class="card-grid">`;
@@ -900,7 +987,7 @@ function renderAgentList() {
     
     // Thinking mode
     html += `<div class="field-group">`;
-    html += `<div class="field-label">Thinking</div>`;
+    html += `<div class="field-label"><span class="field-icon">${icon('select')}</span> Thinking</div>`;
     html += `<select onchange="updateAgent(${i},'thinking',this.value)">`;
     for (const opt of ['','off','on','adaptive','stream']) {
       const sel = agent.thinking === opt ? 'selected' : '';
@@ -910,7 +997,7 @@ function renderAgentList() {
     
     // Allowed channels
     html += `<div class="field-group">`;
-    html += `<div class="field-label">Allowed Channels</div>`;
+    html += `<div class="field-label"><span class="field-icon">${icon('array')}</span> Allowed Channels</div>`;
     html += renderInlineArray(`agent-${i}-channels`, agent.allowedChannels || [], (arr) => { updateAgent(i, 'allowedChannels', arr); });
     html += `</div>`;
     
@@ -918,15 +1005,16 @@ function renderAgentList() {
     html += `</div>`; // card
   });
   
-  html += `<button class="btn" onclick="addAgent()">+ Add Agent</button>`;
+  html += `<button class="btn" onclick="addAgent()">${icon('plus')} Add Agent</button>`;
   html += `</div>`;
   return html;
 }
 
 function cardField(label, type, value, onchange, hint, required, step, fullWidth) {
   const fwClass = fullWidth ? 'full-width' : '';
+  const typeIconName = type === 'textarea' ? 'textarea' : type === 'number' ? 'number' : 'text';
   let html = `<div class="field-group ${fwClass}">`;
-  html += `<div class="field-label">${label}${required ? ' <span class="required">*</span>' : ''}</div>`;
+  html += `<div class="field-label"><span class="field-icon">${icon(typeIconName)}</span> ${label}${required ? ' <span class="required">*</span>' : ''}</div>`;
   if (type === 'textarea') {
     html += `<textarea rows="3" onchange="${onchange}">${escHtml(value)}</textarea>`;
   } else if (type === 'number') {
@@ -944,9 +1032,9 @@ function renderInlineArray(id, arr, updateFn) {
   window['__arrayCallback_' + id] = updateFn;
   let html = `<div class="array-field" id="inline-array-${id}">`;
   arr.forEach((item, i) => {
-    html += `<div class="array-item"><input type="text" value="${escHtml(String(item))}" onchange="updateInlineArray('${id}', ${i}, this.value)" /><button class="btn-remove" onclick="removeInlineArrayItem('${id}', ${i})">✕</button></div>`;
+    html += `<div class="array-item"><input type="text" value="${escHtml(String(item))}" onchange="updateInlineArray('${id}', ${i}, this.value)" /><button class="btn-remove" onclick="removeInlineArrayItem('${id}', ${i})">${icon('close')}</button></div>`;
   });
-  html += `<button class="btn btn-sm array-add" onclick="addInlineArrayItem('${id}')">+ Add</button>`;
+  html += `<button class="btn btn-sm array-add" onclick="addInlineArrayItem('${id}')">${icon('plus')} Add</button>`;
   html += `</div>`;
   return html;
 }
@@ -997,8 +1085,8 @@ function renderBindingList() {
   bindings.forEach((b, i) => {
     html += `<div class="card">`;
     html += `<div class="card-header">`;
-    html += `<h4>🔗 Rule ${i + 1}${b.label ? ' — ' + escHtml(b.label) : ''}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeBinding(${i})">✕ Remove</button>`;
+    html += `<h4>${icon('bindings')} Rule ${i + 1}${b.label ? ' — ' + escHtml(b.label) : ''}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeBinding(${i})">${icon('close')} Remove</button>`;
     html += `</div>`;
     html += `<div class="card-grid">`;
     html += cardField('Label', 'text', b.label || '', `updateBinding(${i},'label',this.value)`, 'Descriptive label for this rule');
@@ -1010,7 +1098,7 @@ function renderBindingList() {
     html += `</div></div>`;
   });
   
-  html += `<button class="btn" onclick="addBinding()">+ Add Binding Rule</button>`;
+  html += `<button class="btn" onclick="addBinding()">${icon('plus')} Add Binding Rule</button>`;
   html += `</div>`;
   return html;
 }
@@ -1049,24 +1137,24 @@ function renderPluginList() {
   plugins.forEach((p, i) => {
     html += `<div class="card">`;
     html += `<div class="card-header">`;
-    html += `<h4>🧩 ${p.name || `Plugin ${i + 1}`}</h4>`;
+    html += `<h4>${icon('plugins')} ${p.name || `Plugin ${i + 1}`}</h4>`;
     html += `<div style="display:flex;gap:6px;align-items:center">`;
     const checked = p.enabled !== false ? 'checked' : '';
     html += `<label class="toggle"><input type="checkbox" ${checked} onchange="updatePlugin(${i},'enabled',this.checked)"><span class="slider"></span></label>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removePlugin(${i})">✕</button>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removePlugin(${i})">${icon('close')}</button>`;
     html += `</div></div>`;
     html += `<div class="card-grid">`;
     html += cardField('Name', 'text', p.name || '', `updatePlugin(${i},'name',this.value)`, 'Plugin identifier', true);
     html += cardField('Package', 'text', p.package || '', `updatePlugin(${i},'package',this.value)`, 'npm package or local path');
     html += `<div class="field-group full-width">`;
-    html += `<div class="field-label">Config (JSON)</div>`;
+    html += `<div class="field-label"><span class="field-icon">${icon('textarea')}</span> Config (JSON)</div>`;
     html += `<textarea rows="3" onchange="updatePluginConfig(${i}, this.value)">${escHtml(JSON.stringify(p.config || {}, null, 2))}</textarea>`;
     html += `<div class="field-hint">Plugin-specific configuration as JSON object.</div>`;
     html += `</div>`;
     html += `</div></div>`;
   });
   
-  html += `<button class="btn" onclick="addPlugin()">+ Add Plugin</button>`;
+  html += `<button class="btn" onclick="addPlugin()">${icon('plus')} Add Plugin</button>`;
   html += `</div>`;
   return html;
 }
@@ -1116,8 +1204,8 @@ function renderCommandList() {
   commands.forEach((cmd, i) => {
     html += `<div class="card">`;
     html += `<div class="card-header">`;
-    html += `<h4>⌘ /${cmd.name || '...'}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeCommand(${i})">✕</button>`;
+    html += `<h4>${icon('commands')} /${cmd.name || '...'}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeCommand(${i})">${icon('close')}</button>`;
     html += `</div>`;
     html += `<div class="card-grid">`;
     html += cardField('Name', 'text', cmd.name || '', `updateCommand(${i},'name',this.value)`, 'Command name (without prefix)', true);
@@ -1126,7 +1214,7 @@ function renderCommandList() {
     html += `</div></div>`;
   });
   
-  html += `<button class="btn" onclick="addCommand()">+ Add Command</button>`;
+  html += `<button class="btn" onclick="addCommand()">${icon('plus')} Add Command</button>`;
   html += `</div>`;
   return html;
 }
@@ -1165,30 +1253,30 @@ function renderModelProviders() {
   providers.forEach((p, i) => {
     html += `<div class="card">`;
     html += `<div class="card-header">`;
-    html += `<h4>🧠 ${p.name || p.type || `Provider ${i + 1}`}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeProvider(${i})">✕</button>`;
+    html += `<h4>${icon('models')} ${p.name || p.type || `Provider ${i + 1}`}</h4>`;
+    html += `<button class="btn btn-sm btn-danger" onclick="removeProvider(${i})">${icon('close')}</button>`;
     html += `</div>`;
     html += `<div class="card-grid">`;
     html += cardField('Name', 'text', p.name || '', `updateProvider(${i},'name',this.value)`, 'Provider identifier', true);
-    html += `<div class="field-group"><div class="field-label">Type</div><select onchange="updateProvider(${i},'type',this.value)">`;
+    html += `<div class="field-group"><div class="field-label"><span class="field-icon">${icon('select')}</span> Type</div><select onchange="updateProvider(${i},'type',this.value)">`;
     for (const t of ['openai','anthropic','openrouter','azure','google','ollama','litellm','custom']) {
       const sel = p.type === t ? 'selected' : '';
       html += `<option value="${t}" ${sel}>${t}</option>`;
     }
     html += `</select></div>`;
     html += cardField('Base URL', 'text', p.baseUrl || '', `updateProvider(${i},'baseUrl',this.value)`, 'API base URL');
-    html += `<div class="field-group"><div class="field-label">API Key <span class="badge badge-secret">SecretRef</span></div>`;
+    html += `<div class="field-group"><div class="field-label"><span class="field-icon">${icon('secretref')}</span> API Key <span class="badge badge-secret">${icon('lock')} SecretRef</span></div>`;
     html += renderProviderSecretRef(i, p.apiKey || {});
     html += `</div>`;
     html += cardField('Model Prefix', 'text', p.prefix || '', `updateProvider(${i},'prefix',this.value)`, 'Prefix for model routing (e.g. "openai/")');
     // Fallbacks as array
-    html += `<div class="field-group full-width"><div class="field-label">Fallback Models</div>`;
+    html += `<div class="field-group full-width"><div class="field-label"><span class="field-icon">${icon('array')}</span> Fallback Models</div>`;
     html += renderInlineArray(`provider-${i}-fallbacks`, p.fallbacks || [], (arr) => { updateProvider(i, 'fallbacks', arr); });
     html += `<div class="field-hint">Model IDs to try if primary model fails.</div></div>`;
     html += `</div></div>`;
   });
   
-  html += `<button class="btn" onclick="addProvider()">+ Add Provider</button>`;
+  html += `<button class="btn" onclick="addProvider()">${icon('plus')} Add Provider</button>`;
   html += `</div>`;
   return html;
 }
@@ -1499,15 +1587,15 @@ function searchAndHighlight(query) {
   
   const content = document.getElementById('content');
   if (results.length === 0) {
-    content.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>No fields matching "${escHtml(query)}"</p></div>`;
+    content.innerHTML = `<div class="empty-state">${icon('search')}<p>No fields matching "${escHtml(query)}"</p></div>`;
     return;
   }
   
-  let html = `<div class="section-title">🔍 Search Results</div>`;
+  let html = `<div class="section-title">${icon('search')} Search Results</div>`;
   html += `<div class="section-desc">${results.length} field${results.length > 1 ? 's' : ''} found</div>`;
   
   for (const r of results) {
-    html += `<div style="margin-bottom:4px;font-size:.75rem;color:var(--text-muted);cursor:pointer" onclick="selectSection('${r.sectionKey}')">${SCHEMA[r.sectionKey].icon} ${r.sectionLabel} › ${r.fieldDef.section ? SCHEMA[r.sectionKey].subsections?.[r.fieldDef.section]?.label || '' : 'General'}</div>`;
+    html += `<div style="margin-bottom:4px;font-size:.75rem;color:var(--text-muted);cursor:pointer" onclick="selectSection('${r.sectionKey}')">${icon(SCHEMA[r.sectionKey].icon)} ${r.sectionLabel} › ${r.fieldDef.section ? SCHEMA[r.sectionKey].subsections?.[r.fieldDef.section]?.label || '' : 'General'}</div>`;
     html += renderField(r.fieldKey, r.fieldDef);
     html += `<hr class="section-divider" style="margin:16px 0">`;
   }
@@ -1598,18 +1686,6 @@ updatePreview();
 
 // Select first section by default
 selectSection('meta');
-
-// ===== Built-in Template Config =====
-const TEMPLATE_CONFIG = {"meta": {"lastTouchedVersion": "2026.3.24"}, "browser": {"enabled": true, "executablePath": "/usr/bin/chromium", "headless": true, "noSandbox": true, "defaultProfile": "openclaw", "profiles": {"openclaw": {"cdpPort": 18800, "color": "#FF4500"}}}, "secrets": {"providers": {"filemain": {"source": "file", "path": "/path/to/your/secrets.json", "mode": "json"}}, "defaults": {"file": "filemain"}}, "auth": {"profiles": {"ai-azone:default": {"provider": "ai-azone", "mode": "token"}, "deepgram:default": {"provider": "deepgram", "mode": "token"}, "mistral:default": {"provider": "mistral", "mode": "token"}}, "order": {"ai-azone": ["ai-azone:default"], "deepgram": ["deepgram:default"], "mistral": ["mistral:default"]}}, "models": {"mode": "replace", "providers": {"ai-azone": {"baseUrl": "https://your-proxy.example.com/v1", "apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "models": []}}}, "agents": {"defaults": {"model": {"primary": "ai-azone/claude-opus-4-6", "fallbacks": ["ai-azone/kimi-k2.5", "ai-azone/kimi-k2-thinking", "ai-azone/glm-5-turbo"]}, "workspace": "~/.openclaw/workspace", "memorySearch": {"extraPaths": ["assets/reference", "voice-notes"], "multimodal": {"enabled": true, "modalities": ["all"], "maxFileBytes": 10000000}, "provider": "gemini", "remote": {"batch": {"enabled": false}}, "fallback": "none", "model": "gemini-embedding-2-preview"}, "contextPruning": {"mode": "cache-ttl", "ttl": "1h"}, "compaction": {"mode": "safeguard", "memoryFlush": {"softThresholdTokens": 12000}}, "thinkingDefault": "adaptive", "heartbeat": {"every": "1h"}, "maxConcurrent": 10, "subagents": {"maxConcurrent": 10, "model": "ai-azone/moonshotai/kimi-k2-0905"}, "sandbox": {"browser": {"enabled": true}, "mode": "non-main"}, "models": {"ai-azone/claude-opus-4-6": {"alias": "Claude Opus 4.6"}, "ai-azone/claude-sonnet-4-6": {"alias": "Claude Sonnet 4.6"}, "ai-azone/gpt-5.4": {"alias": "GPT-5.4"}, "ai-azone/gpt-5": {"alias": "GPT-5"}, "ai-azone/gpt-5.2": {"alias": "GPT-5.2"}, "ai-azone/gemini-3.1-pro-preview": {"alias": "Gemini 3.1 Pro"}, "ai-azone/gemini-2.5-pro": {"alias": "Gemini 2.5 Pro"}, "ai-azone/gemini-3-pro-preview": {"alias": "Gemini 3 Pro"}, "ai-azone/kimi-k2.5": {"alias": "Kimi K2.5"}, "ai-azone/kimi-k2-thinking": {"alias": "Kimi K2 Thinking"}, "ai-azone/glm-5-turbo": {"alias": "GLM-5 Turbo"}, "ai-azone/moonshotai/kimi-k2-0905": {"alias": "Kimi K2 0905"}}}, "list": [{"id": "main", "default": true, "workspace": "~/.openclaw/workspace", "subagents": {"allowAgents": ["*"]}}, {"id": "vex", "workspace": "~/.openclaw/workspace-vex", "model": "ai-azone/moonshotai/kimi-k2-0905", "tools": {"deny": ["exec", "write", "edit", "process", "gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts"], "fs": {"workspaceOnly": true}}}, {"id": "ops", "workspace": "~/.openclaw/workspace-ops", "model": "ai-azone/claude-sonnet-4-6", "tools": {"deny": ["process", "gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts", "exec"], "fs": {"workspaceOnly": true}}}, {"id": "echo", "model": "ai-azone/moonshotai/kimi-k2-0905", "tools": {"allow": ["message"]}}, {"id": "ora", "workspace": "~/.openclaw/workspace-ora", "model": "ai-azone/glm-5", "identity": {"name": "Ora", "emoji": "\u23f1\ufe0f"}, "tools": {"deny": ["gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts", "memory_search", "memory_get", "browser", "image"], "fs": {"workspaceOnly": true}}}, {"id": "xo-dev", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}, {"id": "xo-team", "workspace": "~/.openclaw/workspace", "model": "ai-azone/gemini-3.1-pro-preview", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-opus-4-6"}}, {"id": "xo-strat", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}, {"id": "xo-coach", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}]}, "tools": {"media": {"audio": {"enabled": true, "providerOptions": {"deepgram": {"punctuate": true, "smart_format": true}}}}, "web": {"search": {"enabled": true, "provider": "brave", "maxResults": 5, "cacheTtlMinutes": 15}, "fetch": {"enabled": true, "maxChars": 50000, "cacheTtlMinutes": 15}}, "alsoAllow": ["lobster"], "exec": {"security": "full", "strictInlineEval": false}, "fs": {"workspaceOnly": false}, "elevated": {"enabled": false}}, "bindings": [{"agentId": "xo-dev", "match": {"channel": "telegram", "accountId": "dev"}}, {"agentId": "xo-team", "match": {"channel": "telegram", "accountId": "team"}}, {"agentId": "xo-strat", "match": {"channel": "telegram", "accountId": "strat"}}, {"agentId": "xo-coach", "match": {"channel": "telegram", "accountId": "coach"}}], "messages": {"tts": {"auto": "off", "provider": "elevenlabs", "modelOverrides": {"enabled": true}, "elevenlabs": {"baseUrl": "https://api.elevenlabs.io", "apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "voiceId": "YOUR_VOICE_ID", "modelId": "eleven_multilingual_v2", "languageCode": "fr"}, "openai": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "model": "gpt-4o-mini-tts", "voice": "alloy"}, "microsoft": {"voice": "fr-FR-EloiseNeural", "lang": "fr-FR", "outputFormat": "audio-24khz-48kbitrate-mono-mp3", "pitch": "0%", "rate": "0%"}}}, "commands": {"native": "auto", "nativeSkills": "auto", "bash": true, "restart": true, "ownerDisplay": "raw"}, "hooks": {}, "channels": {"whatsapp": {"enabled": true, "sendReadReceipts": true, "dmPolicy": "allowlist", "selfChatMode": false, "allowFrom": ["+1XXXXXXXXXX"], "groupPolicy": "allowlist", "debounceMs": 2000, "mediaMaxMb": 50, "actions": {"reactions": true, "sendMessage": true, "polls": true}}, "telegram": {"enabled": true, "dmPolicy": "pairing", "groupPolicy": "allowlist", "streaming": "partial", "actions": {"reactions": true, "sendMessage": true, "deleteMessage": true, "sticker": true}, "accounts": {"default": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "streaming": "partial"}, "dev": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "team": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "strat": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "coach": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}}}}, "gateway": {"port": 18789, "mode": "local", "bind": "lan", "controlUi": {"allowedOrigins": ["https://your-domain.example.com"]}, "auth": {"mode": "token", "rateLimit": {"maxAttempts": 10, "windowMs": 60000, "lockoutMs": 300000}}, "trustedProxies": ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12"], "tailscale": {"mode": "off", "resetOnExit": false}, "reload": {"mode": "hybrid", "debounceMs": 300}}, "skills": {"install": {"nodeManager": "npm"}}, "plugins": {"allow": ["telegram", "whatsapp", "discord", "memory-core", "device-pair", "lobster", "llm-task", "acpx"], "entries": {"telegram": {"enabled": true}, "whatsapp": {"enabled": true}, "discord": {"enabled": true}, "brave": {"enabled": true, "config": {"webSearch": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}}}}, "google": {"config": {"webSearch": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}}}}, "llm-task": {"enabled": true}, "acpx": {"enabled": true, "config": {"permissionMode": "approve-all", "nonInteractivePermissions": "deny"}}}}, "acp": {"enabled": true, "defaultAgent": "codex", "backend": "acpx", "dispatch": {"enabled": true}, "allowedAgents": ["claude", "codex", "copilot", "cursor", "droid", "gemini", "iflow", "kilocode", "kimi", "kiro", "openclaw", "opencode", "pi", "qwen"], "maxConcurrentSessions": 8, "stream": {"coalesceIdleMs": 300, "maxChunkChars": 1200}, "runtime": {"ttlMinutes": 120}}};
-
-function loadTemplate() {
-  if (Object.keys(config).length > Object.keys(defaults).length) {
-    if (!confirm('This will replace your current config with the template. Continue?')) return;
-  }
-  loadFromJSON(TEMPLATE_CONFIG);
-  showToast('Template configuration loaded — customize and export!', 'success');
-}
-
 </script>
 </body>
 </html>
