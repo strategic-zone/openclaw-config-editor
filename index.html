@@ -951,13 +951,22 @@ const SECTIONS = [
   },
   {
     id:'commands', label:'Commands', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
-    fields:[
-      {k:'commands.native',info:'auto = register slash commands on Discord/Telegram automatically.',label:'Native',type:'select',opts:['auto','true','false'],desc:'Native command mode'},
-      {k:'commands.nativeSkills',info:'Auto-register skill commands as slash commands.',label:'Native Skills',type:'bool',desc:'Enable native skills'},
-      {k:'commands.bash',info:'Allow ! prefix for direct shell commands. Requires elevated.',label:'Bash',type:'bool',desc:'Allow bash commands'},
-      {k:'commands.restart',info:'Allow /restart to restart the gateway from chat.',label:'Restart',type:'bool',desc:'Allow restart'},
-      {k:'commands.config',info:'Allow /config command to read/write openclaw.json from chat.',label:'Config',type:'bool',desc:'Allow config command'},
-      {k:'commands.debug',info:'Allow /debug command for troubleshooting.',label:'Debug',type:'bool',desc:'Allow debug'},
+    groups:[
+      { title:'Command Parsing', fields:[
+        {k:'commands.native',info:'auto = register native slash commands on platforms that support them (Discord, Telegram).',label:'Native',type:'select',opts:['auto','true','false'],desc:'Register native platform commands'},
+        {k:'commands.nativeSkills',info:'auto = also register skill-provided commands as native slash commands.',label:'Native Skills',type:'select',opts:['auto','true','false'],desc:'Register skill commands natively'},
+        {k:'commands.text',info:'When true, parses /commands typed in chat messages. Disable to only use native platform commands.',label:'Text Commands',type:'bool',desc:'Parse /commands in chat messages'},
+      ]},
+      { title:'Privileged Commands', fields:[
+        {k:'commands.bash',info:'Allow ! prefix (or /bash) to run shell commands directly from chat. Dangerous — requires elevated.',label:'Bash',type:'bool',desc:'Allow ! shell commands from chat'},
+        {k:'commands.bashForegroundMs',info:'How long to wait for bash output before backgrounding. Default: 2000ms.',label:'Bash Foreground (ms)',type:'number',desc:'Foreground timeout for bash commands'},
+        {k:'commands.config',info:'Allow /config get|set|unset to read and write openclaw.json from chat.',label:'Config',type:'bool',desc:'Allow /config command'},
+        {k:'commands.restart',info:'Allow /restart to restart the gateway process from chat.',label:'Restart',type:'bool',desc:'Allow /restart command'},
+        {k:'commands.debug',info:'Allow /debug for troubleshooting (shows internal state).',label:'Debug',type:'bool',desc:'Allow /debug command'},
+      ]},
+      { title:'Display', fields:[
+        {k:'commands.ownerDisplay',info:'How the owner name appears in /status. raw = show as-is. masked = partially hidden.',label:'Owner Display',type:'select',opts:['raw','masked'],desc:'Owner name display in /status'},
+      ]},
     ]
   },
   {
