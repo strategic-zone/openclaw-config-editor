@@ -822,8 +822,10 @@ const SECTIONS = [
           ]},
           { title:'Thinking & Behavior', fields:[
             {k:'agents.defaults.thinkingDefault',label:'Thinking Default',type:'select',opts:['off','low','adaptive','on','stream'],desc:'Default thinking mode'},
-            {k:'agents.defaults.verboseDefault',label:'Verbose Default',type:'bool',desc:'Default verbose mode'},
-            {k:'agents.defaults.elevatedDefault',label:'Elevated Default',type:'bool',desc:'Default elevated mode'},
+            {k:'agents.defaults.verboseDefault',label:'Verbose Default',type:'select',opts:['off','on'],desc:'Default verbose mode'},
+            {k:'agents.defaults.elevatedDefault',label:'Elevated Default',type:'select',opts:['off','on'],desc:'Default elevated mode'},
+            {k:'agents.defaults.blockStreamingDefault',label:'Block Streaming',type:'select',opts:['off','on'],desc:'Block streaming mode'},
+            {k:'agents.defaults.typingMode',label:'Typing Mode',type:'select',opts:['never','instant','thinking','message'],desc:'Typing indicator mode'},
           ]},
           { title:'Heartbeat', fields:[
             {k:'agents.defaults.heartbeat.every',label:'Every',type:'string',desc:'Heartbeat interval (e.g. 30m, 1h)'},
@@ -849,10 +851,19 @@ const SECTIONS = [
             {k:'agents.defaults.models',label:'Model Aliases',type:'kv',desc:'Model aliases (modelId → alias)'},
           ]},
           { title:'Media & Image Models', fields:[
-            {k:'agents.defaults.imageModel',label:'Image Model',type:'string',desc:'Model for image analysis'},
-            {k:'agents.defaults.imageGenerationModel',label:'Image Generation Model',type:'string',desc:'Model for image generation'},
+            {k:'agents.defaults.imageModel',label:'Image Model',type:'string',desc:'Model for image analysis (provider/model)'},
+            {k:'agents.defaults.imageGenerationModel',label:'Image Generation Model',type:'string',desc:'Model for image generation (provider/model)'},
             {k:'agents.defaults.pdfModel',label:'PDF Model',type:'string',desc:'Model for PDF processing'},
+            {k:'agents.defaults.pdfMaxBytesMb',label:'PDF Max MB',type:'number',desc:'Max PDF file size in MB'},
+            {k:'agents.defaults.pdfMaxPages',label:'PDF Max Pages',type:'number',desc:'Max PDF pages for extraction'},
             {k:'agents.defaults.mediaMaxMb',label:'Media Max MB',type:'number',desc:'Max media size in MB'},
+            {k:'agents.defaults.imageMaxDimensionPx',label:'Image Max Dimension (px)',type:'number',desc:'Max pixel size for image longest side'},
+          ]},
+          { title:'Bootstrap & Workspace', fields:[
+            {k:'agents.defaults.skipBootstrap',label:'Skip Bootstrap',type:'bool',desc:'Disable bootstrap file creation'},
+            {k:'agents.defaults.bootstrapTotalMaxChars',label:'Bootstrap Total Max Chars',type:'number',desc:'Max total chars across all bootstrap files'},
+            {k:'agents.defaults.userTimezone',label:'User Timezone',type:'string',desc:'Timezone for system prompt (e.g. America/Chicago)'},
+            {k:'agents.defaults.timeFormat',label:'Time Format',type:'select',opts:['auto','12','24'],desc:'Time format in system prompt'},
           ]},
           { title:'Timeouts', fields:[
             {k:'agents.defaults.timeoutSeconds',label:'Timeout (seconds)',type:'number',desc:'Default timeout in seconds'},
@@ -907,6 +918,7 @@ const SECTIONS = [
       { title:'TTS', fields:[
         {k:'messages.tts.auto',label:'Auto',type:'select',opts:['off','inbound','all'],desc:'When to auto-play TTS'},
         {k:'messages.tts.provider',label:'Provider',type:'select',opts:['elevenlabs','openai','microsoft'],desc:'TTS provider'},
+        {k:'messages.tts.modelOverrides.enabled',label:'Model Overrides',type:'bool',desc:'Allow per-session model override'},
       ]},
       { title:'ElevenLabs Config', fields:[
         {k:'messages.tts.elevenlabs.voiceId',label:'Voice ID',type:'string',desc:'ElevenLabs voice ID'},
@@ -915,11 +927,16 @@ const SECTIONS = [
         {k:'messages.tts.elevenlabs.similarityBoost',label:'Similarity Boost',type:'number',desc:'Similarity boost (0-1)'},
       ]},
       { title:'OpenAI TTS Config', fields:[
-        {k:'messages.tts.openai.voice',label:'Voice',type:'string',desc:'OpenAI TTS voice'},
-        {k:'messages.tts.openai.model',label:'Model',type:'string',desc:'OpenAI TTS model'},
+        {k:'messages.tts.openai.apiKey',label:'API Key',type:'secretRef',desc:'OpenAI API key'},
+        {k:'messages.tts.openai.voice',label:'Voice',type:'string',desc:'OpenAI TTS voice (alloy, echo, fable, onyx, nova, shimmer)'},
+        {k:'messages.tts.openai.model',label:'Model',type:'string',desc:'OpenAI TTS model (gpt-4o-mini-tts, tts-1, tts-1-hd)'},
       ]},
       { title:'Microsoft TTS Config', fields:[
-        {k:'messages.tts.microsoft.voice',label:'Voice',type:'string',desc:'Microsoft voice'},
+        {k:'messages.tts.microsoft.voice',label:'Voice',type:'string',desc:'Microsoft voice (e.g. fr-FR-EloiseNeural)'},
+        {k:'messages.tts.microsoft.lang',label:'Language',type:'string',desc:'Language code (e.g. fr-FR)'},
+        {k:'messages.tts.microsoft.outputFormat',label:'Output Format',type:'string',desc:'Audio format (e.g. audio-24khz-48kbitrate-mono-mp3)'},
+        {k:'messages.tts.microsoft.pitch',label:'Pitch',type:'string',desc:'Pitch adjustment (e.g. 0%)'},
+        {k:'messages.tts.microsoft.rate',label:'Rate',type:'string',desc:'Speech rate (e.g. 0%)'},
         {k:'messages.tts.microsoft.region',label:'Region',type:'string',desc:'Azure region'},
       ]},
     ]
