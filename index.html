@@ -218,11 +218,11 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
       <input type="text" id="searchInput" placeholder="Search settings... (Ctrl+K)" />
     </div>
     <div class="actions">
-      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json">⬆ Import</button>
-      <button class="btn btn-accent" onclick="loadTemplate()" data-tooltip="Load XO One reference config as starting point">🎖️ Load Template</button>
-      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json">⬇ Export</button>
-      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard">📋 Copy</button>
-      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">{ }</button>
+      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json">↑ Import</button>
+      <button class="btn btn-accent" onclick="loadTemplate()" data-tooltip="Load XO One reference config as starting point">Load Template</button>
+      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json">↓ Export</button>
+      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard">Copy</button>
+      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">JSON</button>
     </div>
   </div>
 
@@ -235,14 +235,14 @@ input.modified,textarea.modified,select.modified{border-color:var(--peach)}
       <div class="empty-state">
         <div class="icon">⚙️</div>
         <p>Select a section from the sidebar to begin editing</p>
-        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>🎖️ Load Template</strong> to start from a reference config</p>
+        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>Load Template</strong> to start from a reference config</p>
       </div>
     </main>
 
     <!-- JSON Preview Panel -->
     <aside class="preview-panel" id="previewPanel">
       <div class="preview-header">
-        <span>{ } Live JSON Preview</span>
+        <span>JSON Live JSON Preview</span>
         <button class="btn btn-sm btn-ghost" onclick="togglePreview()">✕</button>
       </div>
       <pre id="previewContent"></pre>
@@ -286,7 +286,7 @@ const SCHEMA = {
   },
   browser: {
     label: 'Browser',
-    icon: '🌐',
+    icon: '☰',
     description: 'Headless browser settings for web scraping and automation.',
     fields: {
       'browser.headless': { type: 'toggle', label: 'Headless Mode', default: true, hint: 'Run browser in headless mode (no GUI).' },
@@ -296,7 +296,7 @@ const SCHEMA = {
   },
   secrets: {
     label: 'Secrets',
-    icon: '🔑',
+    icon: '⚷',
     description: 'Secret provider configuration for API keys and credentials.',
     fields: {
       'secrets.provider': { type: 'select', label: 'Provider', default: 'env', options: ['env','file','vault','bitwarden','1password'], hint: 'Secret backend provider.', security: true },
@@ -316,7 +316,7 @@ const SCHEMA = {
   },
   models: {
     label: 'Models',
-    icon: '🧠',
+    icon: '◈',
     description: 'AI model provider configuration and routing.',
     subsections: {
       'models.providers': {
@@ -335,7 +335,7 @@ const SCHEMA = {
   },
   agents: {
     label: 'Agents',
-    icon: '🤖',
+    icon: '◆',
     description: 'Agent definitions, defaults, and per-agent configuration.',
     subsections: {
       'agents.defaults': { label: 'Defaults', description: 'Default settings applied to all agents.' },
@@ -356,7 +356,7 @@ const SCHEMA = {
   },
   tools: {
     label: 'Tools',
-    icon: '🔧',
+    icon: '⚒',
     description: 'Tool definitions and security policies.',
     fields: {
       'tools.security': { type: 'select', label: 'Default Security', default: 'allowlist', options: ['full','allowlist','deny'], hint: 'Default exec security policy.', security: true },
@@ -374,7 +374,7 @@ const SCHEMA = {
   },
   bindings: {
     label: 'Bindings',
-    icon: '🔗',
+    icon: '⇋',
     description: 'Route channels and patterns to specific agents.',
     fields: {
       'bindings': { type: 'binding-list', label: 'Routing Rules', default: [], hint: 'Rules that bind channels/patterns to agents.' },
@@ -408,7 +408,7 @@ const SCHEMA = {
   },
   channels: {
     label: 'Channels',
-    icon: '📡',
+    icon: '⊕',
     description: 'Messaging channel integrations (WhatsApp, Telegram, etc.).',
     subsections: {
       'channels.whatsapp': { label: 'WhatsApp', description: 'WhatsApp Business API integration.' },
@@ -511,6 +511,11 @@ function buildDefaults() {
 }
 
 function initConfig() {
+  // Auto-load template config on first visit
+  if (typeof TEMPLATE_CONFIG !== 'undefined') {
+    loadFromJSON(TEMPLATE_CONFIG);
+    return;
+  }
   config = JSON.parse(JSON.stringify(defaults));
 }
 
@@ -714,7 +719,7 @@ function renderContent() {
   const content = document.getElementById('content');
   if (!activeSection) {
     content.innerHTML = `<div class="empty-state"><div class="icon">⚙️</div><p>Select a section from the sidebar to begin editing</p>
-        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>🎖️ Load Template</strong> to start from a reference config</p></div>`;
+        <p style="margin-top:12px;color:var(--text-muted)">Or click <strong>Load Template</strong> to start from a reference config</p></div>`;
     return;
   }
   
