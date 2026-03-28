@@ -3,1712 +3,983 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenClaw Configuration Editor</title>
+<title>OpenClaw Config Editor</title>
 <style>
-/* ===== CSS Reset & Variables ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-primary:#1e1e2e;
-  --bg-secondary:#181825;
-  --bg-tertiary:#11111b;
-  --bg-surface:#313244;
-  --bg-hover:#45475a;
-  --bg-input:#1e1e2e;
-  --border:#45475a;
-  --border-focus:#89b4fa;
-  --text-primary:#cdd6f4;
-  --text-secondary:#a6adc8;
-  --text-muted:#6c7086;
-  --text-bright:#f5f5f5;
-  --accent:#89b4fa;
-  --accent-hover:#74c7ec;
-  --green:#a6e3a1;
-  --red:#f38ba8;
-  --yellow:#f9e2af;
-  --peach:#fab387;
-  --mauve:#cba6f7;
-  --teal:#94e2d5;
-  --pink:#f5c2e7;
-  --radius:6px;
-  --radius-lg:10px;
-  --shadow:0 2px 8px rgba(0,0,0,.3);
-  --sidebar-width:280px;
-  --topbar-height:52px;
-  --transition:150ms ease;
-  --font-mono:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
-  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
+  --bg:#1e1e2e;--bg2:#181825;--bg3:#11111b;--surface:#313244;--hover:#45475a;
+  --border:#45475a;--border-focus:#89b4fa;
+  --text:#cdd6f4;--text2:#a6adc8;--muted:#6c7086;--bright:#f5f5f5;
+  --accent:#89b4fa;--accent2:#74c7ec;--green:#a6e3a1;--red:#f38ba8;
+  --yellow:#f9e2af;--peach:#fab387;--mauve:#cba6f7;--teal:#94e2d5;--pink:#f5c2e7;
+  --r:6px;--rl:10px;--shadow:0 2px 8px rgba(0,0,0,.3);
+  --sidebar:260px;--topbar:50px;--mono:'Consolas','Courier New',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 }
 html{font-size:14px}
-body{font-family:var(--font-sans);background:var(--bg-primary);color:var(--text-primary);overflow:hidden;height:100vh}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-
-/* ===== Layout ===== */
-#app{display:flex;flex-direction:column;height:100vh}
-.topbar{height:var(--topbar-height);background:var(--bg-tertiary);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100}
-.topbar .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem;color:var(--text-bright);white-space:nowrap}
-.topbar .logo svg{width:22px;height:22px}
-.topbar .actions{display:flex;align-items:center;gap:8px;margin-left:auto}
-.main-layout{display:flex;flex:1;overflow:hidden}
-.sidebar{width:var(--sidebar-width);background:var(--bg-secondary);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--bg-hover) transparent}
-.content{flex:1;overflow-y:auto;padding:24px 32px;scrollbar-width:thin;scrollbar-color:var(--bg-hover) transparent}
-.preview-panel{width:0;overflow:hidden;transition:width .25s ease;background:var(--bg-tertiary);border-left:1px solid var(--border);position:relative}
-.preview-panel.open{width:420px}
-.preview-panel pre{padding:16px;font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);overflow:auto;height:calc(100vh - var(--topbar-height) - 44px);white-space:pre;tab-size:2;scrollbar-width:thin}
-.preview-header{height:44px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:.85rem;color:var(--text-secondary);gap:8px}
-.preview-header span{flex:1}
-
-/* ===== Scrollbar ===== */
-::-webkit-scrollbar{width:8px;height:8px}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+::-webkit-scrollbar{width:7px;height:7px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--border)}
-
-/* ===== Buttons ===== */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-surface);color:var(--text-primary);font-size:.8rem;font-weight:500;cursor:pointer;transition:all var(--transition);white-space:nowrap}
-.btn:hover{background:var(--bg-hover);border-color:var(--accent)}
-.btn-primary{background:var(--accent);color:var(--bg-tertiary);border-color:var(--accent);font-weight:600}
-.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
-.btn-danger{border-color:var(--red);color:var(--red)}
-.btn-danger:hover{background:rgba(243,139,168,.15)}
-.btn-sm{padding:4px 10px;font-size:.75rem}
-.btn-icon{padding:6px 8px;font-size:1rem;line-height:1}
-.btn-ghost{background:transparent;border-color:transparent}
-.btn-ghost:hover{background:var(--bg-surface)}
+::-webkit-scrollbar-thumb{background:var(--hover);border-radius:4px}
+#app{display:flex;flex-direction:column;height:100vh}
+.topbar{height:var(--topbar);background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:100}
+.topbar .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem;color:var(--bright)}
+.topbar .logo svg{width:20px;height:20px}
+.topbar .actions{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.main-wrap{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;scrollbar-width:thin}
+.content{flex:1;overflow-y:auto;padding:24px 32px;scrollbar-width:thin}
+.preview{width:0;overflow:hidden;transition:width .2s;background:var(--bg3);border-left:1px solid var(--border);position:relative}
+.preview.open{width:400px}
+.preview pre{padding:14px;font-family:var(--mono);font-size:.78rem;color:var(--text2);overflow:auto;height:calc(100vh - var(--topbar) - 40px);white-space:pre;tab-size:2;scrollbar-width:thin}
+.preview-hdr{height:40px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:.82rem;color:var(--text2)}
+.preview-hdr span{flex:1}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:.78rem;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{background:var(--hover);border-color:var(--accent)}
+.btn-p{background:var(--accent);color:var(--bg3);border-color:var(--accent);font-weight:600}
+.btn-p:hover{background:var(--accent2)}
+.btn-d{border-color:var(--red);color:var(--red)}
+.btn-d:hover{background:rgba(243,139,168,.12)}
+.btn-sm{padding:3px 8px;font-size:.72rem}
 .btn svg{width:14px;height:14px;flex-shrink:0}
-
-/* ===== Sidebar ===== */
-.sidebar-section{border-bottom:1px solid var(--border)}
-.sidebar-section:last-child{border-bottom:none}
-.sidebar-header{display:flex;align-items:center;padding:10px 16px;cursor:pointer;user-select:none;gap:8px;font-weight:600;font-size:.85rem;color:var(--text-secondary);transition:all var(--transition)}
-.sidebar-header:hover{background:var(--bg-surface);color:var(--text-primary)}
-.sidebar-header.active{color:var(--accent);background:rgba(137,180,250,.08)}
-.sidebar-header .chevron{transition:transform var(--transition);font-size:.7rem;opacity:.5;margin-left:auto}
-.sidebar-header.expanded .chevron{transform:rotate(90deg)}
-.sidebar-header .icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sidebar-header .icon svg{width:16px;height:16px}
-.sidebar-items{display:none;padding:2px 0 6px}
-.sidebar-header.expanded+.sidebar-items{display:block}
-.sidebar-item{padding:6px 16px 6px 44px;font-size:.8rem;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
-.sidebar-item:hover{color:var(--text-primary);background:var(--bg-surface)}
-.sidebar-item.active{color:var(--accent);background:rgba(137,180,250,.06)}
-.sidebar-item .modified-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--peach);margin-left:6px}
-
-/* ===== Form Controls ===== */
-.section-title{font-size:1.3rem;font-weight:700;margin-bottom:4px;color:var(--text-bright);display:flex;align-items:center;gap:10px}
-.section-title svg{width:22px;height:22px}
-.section-desc{color:var(--text-muted);font-size:.85rem;margin-bottom:24px;line-height:1.5}
-.field-group{margin-bottom:20px}
-.field-label{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
-.field-label .field-icon{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.7}
-.field-label .field-icon svg{width:14px;height:14px}
-.field-label .required{color:var(--red);font-weight:700}
-.field-label .badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.field-label .badge svg{width:10px;height:10px}
-.badge-secret{background:rgba(203,166,247,.15);color:var(--mauve);border:1px solid rgba(203,166,247,.3)}
-.badge-security{background:rgba(243,139,168,.12);color:var(--red);border:1px solid rgba(243,139,168,.25)}
-.badge-changed{background:rgba(250,179,135,.12);color:var(--peach);border:1px solid rgba(250,179,135,.25)}
-.badge-warning{background:rgba(243,139,168,.15);color:var(--red);border:1px solid rgba(243,139,168,.3);font-size:.65rem;padding:2px 6px;border-radius:3px;display:inline-flex;align-items:center;gap:3px;font-weight:600}
-.badge-warning svg{width:12px;height:12px}
-.field-hint{font-size:.75rem;color:var(--text-muted);margin-top:4px;line-height:1.4}
-.field-security-warning{font-size:.75rem;color:var(--red);margin-top:4px;line-height:1.4;display:flex;align-items:center;gap:4px}
-.field-security-warning svg{width:14px;height:14px;flex-shrink:0}
-input[type="text"],input[type="number"],input[type="password"],textarea,select{width:100%;padding:8px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:.85rem;font-family:var(--font-sans);transition:border-color var(--transition),box-shadow var(--transition);outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--border-focus);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
-input::placeholder,textarea::placeholder{color:var(--text-muted)}
-input[type="number"]{font-family:var(--font-mono)}
-textarea{resize:vertical;min-height:80px;font-family:var(--font-mono);font-size:.8rem}
-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236c7086' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-input.modified,textarea.modified,select.modified{border-color:var(--peach)}
-
-/* Toggle */
-.toggle-wrap{display:flex;align-items:center;gap:10px}
-.toggle{position:relative;width:40px;height:22px;cursor:pointer}
-.toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle .slider{position:absolute;inset:0;background:var(--bg-hover);border-radius:11px;transition:var(--transition)}
-.toggle .slider::before{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--text-muted);transition:var(--transition)}
+.sb-sec{border-bottom:1px solid var(--border)}
+.sb-hdr{display:flex;align-items:center;padding:9px 14px;cursor:pointer;user-select:none;gap:7px;font-weight:600;font-size:.82rem;color:var(--text2);transition:.15s}
+.sb-hdr:hover{background:var(--surface);color:var(--text)}
+.sb-hdr.active{color:var(--accent);background:rgba(137,180,250,.08)}
+.sb-hdr .chv{transition:transform .15s;font-size:.65rem;opacity:.5;margin-left:auto}
+.sb-hdr.exp .chv{transform:rotate(90deg)}
+.sb-hdr .ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-hdr .ico svg{width:15px;height:15px}
+.sb-items{display:none;padding:2px 0 5px}
+.sb-hdr.exp+.sb-items{display:block}
+.sb-item{padding:5px 14px 5px 40px;font-size:.78rem;color:var(--muted);cursor:pointer;transition:.15s}
+.sb-item:hover{color:var(--text);background:var(--surface)}
+.sb-item.active{color:var(--accent);background:rgba(137,180,250,.06)}
+.sec-title{font-size:1.2rem;font-weight:700;margin-bottom:4px;color:var(--bright);display:flex;align-items:center;gap:8px}
+.sec-desc{color:var(--muted);font-size:.82rem;margin-bottom:20px;line-height:1.4}
+.field-group{margin-bottom:22px}
+.field-group-title{font-size:.9rem;font-weight:600;color:var(--peach);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:14px}
+.field-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.field label{display:block;font-size:.8rem;font-weight:500;color:var(--text2);margin-bottom:4px}
+.field .desc{font-size:.72rem;color:var(--muted);margin-top:2px}
+input[type="text"],input[type="number"],select,textarea{
+  width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-size:.82rem;font-family:var(--sans);transition:.15s;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
+input[type="number"]{width:120px}
+select{cursor:pointer;appearance:auto}
+textarea{font-family:var(--mono);min-height:60px;resize:vertical}
+.toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;inset:0;background:var(--surface);border-radius:10px;cursor:pointer;transition:.2s}
+.toggle .slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:var(--muted);border-radius:50%;transition:.2s}
 .toggle input:checked+.slider{background:var(--accent)}
-.toggle input:checked+.slider::before{transform:translateX(18px);background:#fff}
-.toggle-label{font-size:.85rem;color:var(--text-primary)}
-
-/* Array field */
-.array-field{display:flex;flex-direction:column;gap:6px}
-.array-item{display:flex;align-items:center;gap:6px}
-.array-item input{flex:1}
-.array-item .btn-remove{padding:6px 8px;color:var(--red);cursor:pointer;background:none;border:1px solid transparent;border-radius:var(--radius);transition:all var(--transition);display:flex;align-items:center;justify-content:center}
-.array-item .btn-remove svg{width:14px;height:14px}
-.array-item .btn-remove:hover{background:rgba(243,139,168,.1);border-color:var(--red)}
-.array-add{align-self:flex-start}
-
-/* Cards */
-.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.card-header h4{font-size:.9rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:6px}
-.card-header h4 svg{width:16px;height:16px}
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
-.card-grid .field-group{margin-bottom:0}
-.card-grid .full-width{grid-column:1/-1}
-
-/* SecretRef */
-.secretref-fields{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px}
-.secretref-fields input{font-family:var(--font-mono);font-size:.8rem}
-
-/* Empty state */
-.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
-.empty-state svg{width:48px;height:48px;margin-bottom:12px;opacity:.5}
-
-/* Tooltip */
-[data-tooltip]{position:relative}
-[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-tertiary);color:var(--text-primary);padding:6px 10px;border-radius:var(--radius);font-size:.75rem;white-space:nowrap;z-index:1000;border:1px solid var(--border);box-shadow:var(--shadow);max-width:300px;white-space:normal;pointer-events:none}
-
-/* Divider */
-.section-divider{border:none;border-top:1px solid var(--border);margin:28px 0}
-
-/* Tag input */
-.tag-container{display:flex;flex-wrap:wrap;gap:6px;padding:6px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);min-height:38px;cursor:text}
-.tag-container:focus-within{border-color:var(--border-focus);box-shadow:0 0 0 2px rgba(137,180,250,.15)}
-.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--bg-hover);border-radius:4px;font-size:.8rem;color:var(--text-primary)}
-.tag .tag-remove{cursor:pointer;color:var(--text-muted);font-size:.9rem;line-height:1}
-.tag .tag-remove:hover{color:var(--red)}
-.tag-input{border:none;background:none;outline:none;color:var(--text-primary);font-size:.8rem;flex:1;min-width:80px;padding:2px}
-
-/* Key-value pairs */
-.kv-row{display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:6px;align-items:center}
-.kv-row input{font-family:var(--font-mono);font-size:.8rem}
-
-/* Responsive */
-@media(max-width:900px){
-  .sidebar{width:220px}
-  .preview-panel.open{width:320px}
-  .content{padding:16px}
-  .card-grid{grid-template-columns:1fr}
-}
-@media(max-width:700px){
-  .sidebar{position:fixed;left:-280px;z-index:200;height:calc(100vh - var(--topbar-height));top:var(--topbar-height);transition:left .25s ease}
-  .sidebar.mobile-open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.5)}
-  .preview-panel.open{width:100%;position:fixed;right:0;top:var(--topbar-height);height:calc(100vh - var(--topbar-height));z-index:199}
-}
-
-/* Notification toast */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;color:var(--text-primary);font-size:.85rem;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s ease;box-shadow:var(--shadow)}
+.toggle input:checked+.slider::before{transform:translateX(16px);background:var(--bright)}
+.arr-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.arr-item{display:flex;align-items:center;gap:6px}
+.arr-item input{flex:1}
+.arr-item .rm{background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:3px;transition:.15s}
+.arr-item .rm:hover{background:rgba(243,139,168,.12)}
+.arr-add{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:none;border:1px dashed var(--border);border-radius:var(--r);color:var(--accent);font-size:.75rem;cursor:pointer;margin-top:4px;transition:.15s}
+.arr-add:hover{border-color:var(--accent);background:rgba(137,180,250,.06)}
+.kv-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.kv-row input{flex:1}
+.kv-row .k{max-width:160px}
+.kv-row .rm{background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:2px 6px}
+.secret-ref{border:1px solid var(--mauve);border-radius:var(--r);padding:10px;background:rgba(203,166,247,.04);margin-top:4px}
+.secret-ref .lock{color:var(--mauve);font-size:.75rem;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.secret-ref .lock svg{width:12px;height:12px}
+.secret-ref .sr-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.secret-ref .sr-fields label{font-size:.7rem;color:var(--mauve)}
+.sub-card{border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:14px;background:rgba(49,50,68,.3)}
+.sub-card-title{font-size:.85rem;font-weight:600;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sub-card-title .rm{margin-left:auto}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--accent);color:var(--text);padding:10px 18px;border-radius:var(--r);font-size:.82rem;z-index:999;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
-.toast.success{border-color:var(--green);background:rgba(166,227,161,.1)}
-.toast.error{border-color:var(--red);background:rgba(243,139,168,.1)}
-
-/* Search */
-.search-box{position:relative;flex:1;max-width:340px}
-.search-box input{width:100%;padding:6px 12px 6px 32px;background:var(--bg-surface);border:1px solid transparent;border-radius:var(--radius);color:var(--text-primary);font-size:.8rem}
-.search-box input:focus{border-color:var(--border-focus)}
-.search-box .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);display:flex;align-items:center}
-.search-box .search-icon svg{width:14px;height:14px}
-
-/* Tab bar inside content */
-.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.tab-btn{padding:8px 16px;font-size:.8rem;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all var(--transition)}
-.tab-btn:hover{color:var(--text-primary)}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-
-/* Status bar */
-.statusbar{height:24px;background:var(--bg-tertiary);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;font-size:.7rem;color:var(--text-muted);gap:16px;flex-shrink:0}
-
-/* File drop overlay */
-.drop-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,27,.9);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--accent);font-size:1.2rem;font-weight:600}
-.drop-overlay.active{display:flex}
-.drop-overlay svg{width:48px;height:48px}
 </style>
 </head>
 <body>
 <div id="app">
-  <!-- Top Bar -->
   <div class="topbar">
     <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       OpenClaw Config Editor
     </div>
-    <div class="search-box">
-      <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
-      <input type="text" id="searchInput" placeholder="Search settings... (Ctrl+K)" />
-    </div>
     <div class="actions">
-      <button class="btn" onclick="importJSON()" data-tooltip="Import an existing openclaw.json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>
-      <button class="btn btn-primary" onclick="exportJSON()" data-tooltip="Download openclaw.json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
-      <button class="btn" onclick="copyToClipboard()" data-tooltip="Copy JSON to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button>
-      <button class="btn btn-ghost" id="togglePreview" onclick="togglePreview()" data-tooltip="Toggle live JSON preview">{ }</button>
+      <button class="btn" onclick="doImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import</button>
+      <button class="btn btn-p" onclick="doExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Export</button>
+      <button class="btn" onclick="doCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
+      <button class="btn" onclick="loadTemplate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Template</button>
+      <button class="btn" onclick="togglePreview()" id="previewBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>JSON</button>
     </div>
   </div>
-
-  <div class="main-layout">
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar"></nav>
-
-    <!-- Main Content -->
-    <main class="content" id="content">
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        <p>Select a section from the sidebar to begin editing</p>
-      </div>
-    </main>
-
-    <!-- JSON Preview Panel -->
-    <aside class="preview-panel" id="previewPanel">
-      <div class="preview-header">
-        <span>{ } Live JSON Preview</span>
-        <button class="btn btn-sm btn-ghost" onclick="togglePreview()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      </div>
-      <pre id="previewContent"></pre>
-    </aside>
-  </div>
-
-  <!-- Status Bar -->
-  <div class="statusbar">
-    <span id="statusModified">No changes</span>
-    <span id="statusSection">—</span>
-    <span style="margin-left:auto">OpenClaw Configuration Editor v1.0</span>
+  <div class="main-wrap">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content"></div>
+    <div class="preview" id="preview">
+      <div class="preview-hdr"><span>JSON Preview</span></div>
+      <pre id="previewCode"></pre>
+    </div>
   </div>
 </div>
-
-<!-- File Input (hidden) -->
-<input type="file" id="fileInput" accept=".json,.json5" style="display:none" onchange="handleFileImport(event)"/>
-
-<!-- Drop Overlay -->
-<div class="drop-overlay" id="dropOverlay">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-  Drop openclaw.json here
-</div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
+<input type="file" id="fileInput" accept=".json,application/json" style="display:none">
 <script>
-// ============================================================
-// SVG ICON LIBRARY — Inline, no external deps
-// ============================================================
-
-const SVG_ICONS = {
-  // Section icons (sidebar + section headers) — 16x16 default, viewBox 0 0 24 24
-  meta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
-  browser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
-  secrets: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  auth: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
-  models: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4c0 1.95-1.4 3.58-3.25 3.93L12 10v2"/><circle cx="12" cy="18" r="4"/><path d="M8 18h0"/><path d="M16 18h0"/><path d="M12 14v0"/><path d="M7.5 6.5L4 8"/><path d="M16.5 6.5L20 8"/></svg>',
-  agents: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
-  tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>',
-  bindings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
-  messages: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>',
-  commands: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
-  channels: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2a5.5 5.5 0 010-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a5.5 5.5 0 010 8.4"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19.1"/></svg>',
-  gateway: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
-  plugins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 2H12L10.5 3.5V5H6a2 2 0 00-2 2v3.8l1.5 1.5H7v-1.5L8 9.5h8L17 10.8v1.5h1.5L20 10.8V7a2 2 0 00-2-2h-4.5V3.5L12 2h1.5"/><path d="M20 14.8V18a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.2l1.5-1.5H7v1.5L8 18.5h8l1-1.7v-1.5h1.5l1.5 1.5z"/></svg>',
-  acp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>',
-
-  // Field type icons — for form labels
-  toggle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="16" cy="12" r="3"/></svg>',
-  text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>',
-  number: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
-  array: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
-  select: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
-  secretref: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
-  path: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
-  url: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
-  textarea: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  password: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
-
-  // Utility icons
-  warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  shieldAlert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
-  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
-  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
-  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+// ==================== TEMPLATE CONFIG ====================
+const TEMPLATE_CONFIG = {
+  "browser": { "enabled": false, "headless": true, "noSandbox": false },
+  "models": { "mode": "merge", "providers": {} },
+  "agents": {
+    "defaults": {
+      "model": { "primary": "anthropic/claude-sonnet-4-20250514" },
+      "workspace": "~/.openclaw/workspace",
+      "memorySearch": { "provider": "local" },
+      "contextPruning": { "mode": "cache-ttl", "ttl": "15m" },
+      "compaction": { "mode": "safeguard" },
+      "thinkingDefault": "adaptive",
+      "sandbox": { "mode": "off" },
+      "maxConcurrent": 3,
+      "subagents": { "maxConcurrent": 2 },
+      "timeoutSeconds": 300,
+      "mediaMaxMb": 25,
+      "contextTokens": 200000,
+      "bootstrapMaxChars": 80000
+    },
+    "list": []
+  },
+  "tools": {
+    "exec": { "security": "allowlist", "ask": "on-miss" },
+    "fs": { "workspaceOnly": true },
+    "elevated": { "enabled": false },
+    "web": {
+      "search": { "enabled": true, "provider": "brave", "maxResults": 5, "cacheTtlMinutes": 30 },
+      "fetch": { "enabled": true, "maxChars": 50000, "cacheTtlMinutes": 30 }
+    }
+  },
+  "commands": { "native": "auto", "bash": true, "restart": true, "config": true, "debug": false },
+  "channels": {
+    "whatsapp": { "enabled": false, "dmPolicy": "pairing", "groupPolicy": "allowlist", "sendReadReceipts": true },
+    "telegram": { "enabled": false, "dmPolicy": "pairing", "groupPolicy": "allowlist", "streaming": "partial" },
+    "discord": { "enabled": false, "dmPolicy": "pairing" }
+  },
+  "gateway": { "port": 3578, "mode": "local", "bind": "loopback", "auth": { "mode": "token" } },
+  "plugins": { "allow": [], "entries": {} },
+  "session": { "dmScope": "default" },
+  "messages": { "tts": { "auto": "off", "provider": "elevenlabs" } },
+  "acp": { "enabled": false },
+  "bindings": []
 };
 
-// Helper to get SVG icon string by name
-function icon(name, size) {
-  const svg = SVG_ICONS[name] || SVG_ICONS.settings;
-  if (!size) return svg;
-  // Inject width/height into the svg tag
-  return svg.replace('<svg ', `<svg width="${size}" height="${size}" `);
-}
-
-// Get the right field type icon based on field definition
-function fieldTypeIcon(fieldDef) {
-  // Check if it's a URL-like field
-  if (fieldDef.label && /\b(url|webhook|base\s*url|endpoint)\b/i.test(fieldDef.label)) return 'url';
-  if (fieldDef.label && /\b(path|directory|dir)\b/i.test(fieldDef.label)) return 'path';
-  // Map by type
-  const map = {
-    'toggle': 'toggle',
-    'text': 'text',
-    'number': 'number',
-    'array': 'array',
-    'select': 'select',
-    'secretref': 'secretref',
-    'textarea': 'textarea',
-    'password': 'password',
-    'model-providers': 'array',
-    'agent-list': 'array',
-    'binding-list': 'array',
-    'plugin-list': 'array',
-    'command-list': 'array',
-  };
-  return map[fieldDef.type] || 'text';
-}
-
-// ============================================================
-// CONFIG SCHEMA DEFINITION
-// ============================================================
-
-const SCHEMA = {
-  meta: {
-    label: 'Meta',
-    icon: 'meta',
-    description: 'General configuration metadata.',
-    fields: {
-      '$schema': { type: 'text', label: 'Schema URL', default: '', hint: 'JSON schema URL for editor validation.' },
-      version: { type: 'number', label: 'Config Version', default: 1, hint: 'Configuration schema version.' },
-    }
+// ==================== SCHEMA DEFINITION ====================
+const SECTIONS = [
+  {
+    id:'browser', label:'Browser', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    fields:[
+      {k:'browser.enabled',label:'Enabled',type:'bool',desc:'Enable built-in browser'},
+      {k:'browser.executablePath',label:'Executable Path',type:'string',desc:'Path to browser executable'},
+      {k:'browser.headless',label:'Headless',type:'bool',desc:'Run browser in headless mode'},
+      {k:'browser.noSandbox',label:'No Sandbox',type:'bool',desc:'Disable browser sandbox (for Docker)'},
+      {k:'browser.defaultProfile',label:'Default Profile',type:'string',desc:'Default browser profile name'},
+      {k:'browser.profiles',label:'Profiles',type:'kv-object',desc:'Browser profiles (name → {cdpPort, color})',valType:'json'},
+    ]
   },
-  browser: {
-    label: 'Browser',
-    icon: 'browser',
-    description: 'Headless browser settings for web scraping and automation.',
-    fields: {
-      'browser.headless': { type: 'toggle', label: 'Headless Mode', default: true, hint: 'Run browser in headless mode (no GUI).' },
-      'browser.timeout': { type: 'number', label: 'Timeout (ms)', default: 30000, hint: 'Default page load timeout in milliseconds.' },
-      'browser.userAgent': { type: 'text', label: 'User Agent', default: '', hint: 'Custom user agent string.' },
-    }
+  {
+    id:'secrets', label:'Secrets', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+    fields:[
+      {k:'secrets.providers',label:'Providers',type:'kv-object',desc:'Secret providers (name → config)',valType:'json'},
+      {k:'secrets.defaults.file',label:'Defaults File',type:'string',desc:'Default secrets file path'},
+    ]
   },
-  secrets: {
-    label: 'Secrets',
-    icon: 'secrets',
-    description: 'Secret provider configuration for API keys and credentials.',
-    fields: {
-      'secrets.provider': { type: 'select', label: 'Provider', default: 'env', options: ['env','file','vault','bitwarden','1password'], hint: 'Secret backend provider.', security: true },
-      'secrets.path': { type: 'text', label: 'Path / URL', default: '', hint: 'Path or URL for the secret store.' },
-    }
+  {
+    id:'auth', label:'Auth', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    fields:[
+      {k:'auth.profiles',label:'Profiles',type:'kv-object',desc:'Auth profiles (name → config)',valType:'json'},
+      {k:'auth.order',label:'Order',type:'kv-object',desc:'Auth order (provider → priority)',valType:'json'},
+    ]
   },
-  auth: {
-    label: 'Auth',
-    icon: 'auth',
-    description: 'Authentication and authorization settings.',
-    fields: {
-      'auth.enabled': { type: 'toggle', label: 'Auth Enabled', default: true, hint: 'Enable authentication on the gateway.', security: true },
-      'auth.provider': { type: 'select', label: 'Provider', default: 'token', options: ['token','basic','oidc','none'], hint: 'Authentication provider.', security: true },
-      'auth.token': { type: 'secretref', label: 'Auth Token', hint: 'Token for API authentication (SecretRef).', security: true },
-      'auth.allowedOrigins': { type: 'array', label: 'Allowed Origins', default: [], hint: 'CORS allowed origins. Use ["*"] for all (insecure).', security: true },
-    }
+  {
+    id:'models', label:'Models', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+    fields:[
+      {k:'models.mode',label:'Mode',type:'select',opts:['replace','merge'],desc:'How to combine model configs'},
+      {k:'models.providers',label:'Providers',type:'kv-object',desc:'Model providers (name → {baseUrl, apiKey, models[]})',valType:'json'},
+    ]
   },
-  models: {
-    label: 'Models',
-    icon: 'models',
-    description: 'AI model provider configuration and routing.',
-    subsections: {
-      'models.providers': {
-        label: 'Providers',
-        description: 'Configure AI model providers.',
+  {
+    id:'agents', label:'Agents', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+    subs:[
+      {
+        id:'agents.defaults', label:'Defaults',
+        groups:[
+          { title:'Model', fields:[
+            {k:'agents.defaults.model.primary',label:'Primary Model',type:'string',desc:'Primary model identifier'},
+            {k:'agents.defaults.model.fallbacks',label:'Fallback Models',type:'array',desc:'Fallback model identifiers'},
+          ]},
+          { title:'Workspace', fields:[
+            {k:'agents.defaults.workspace',label:'Workspace',type:'string',desc:'Default workspace path'},
+            {k:'agents.defaults.repoRoot',label:'Repo Root',type:'string',desc:'Repository root path'},
+          ]},
+          { title:'Memory Search', fields:[
+            {k:'agents.defaults.memorySearch.provider',label:'Provider',type:'string',desc:'Memory search provider'},
+            {k:'agents.defaults.memorySearch.model',label:'Model',type:'string',desc:'Model for embeddings'},
+            {k:'agents.defaults.memorySearch.extraPaths',label:'Extra Paths',type:'array',desc:'Additional paths to index'},
+            {k:'agents.defaults.memorySearch.multimodal.enabled',label:'Multimodal Enabled',type:'bool',desc:'Enable multimodal memory search'},
+            {k:'agents.defaults.memorySearch.multimodal.modalities',label:'Modalities',type:'array',desc:'Modalities (text, image, audio)'},
+            {k:'agents.defaults.memorySearch.fallback',label:'Fallback',type:'string',desc:'Fallback search strategy'},
+          ]},
+          { title:'Context & Compaction', fields:[
+            {k:'agents.defaults.contextPruning.mode',label:'Pruning Mode',type:'select',opts:['cache-ttl','none'],desc:'How to prune context'},
+            {k:'agents.defaults.contextPruning.ttl',label:'Pruning TTL',type:'string',desc:'TTL for cache-ttl pruning (e.g. 15m)'},
+            {k:'agents.defaults.compaction.mode',label:'Compaction Mode',type:'select',opts:['safeguard','soft','off'],desc:'Compaction strategy'},
+            {k:'agents.defaults.compaction.memoryFlush.softThresholdTokens',label:'Soft Threshold Tokens',type:'number',desc:'Token threshold for soft compaction'},
+            {k:'agents.defaults.contextTokens',label:'Context Tokens',type:'number',desc:'Max context window tokens'},
+            {k:'agents.defaults.bootstrapMaxChars',label:'Bootstrap Max Chars',type:'number',desc:'Max chars for bootstrap context'},
+          ]},
+          { title:'Thinking & Behavior', fields:[
+            {k:'agents.defaults.thinkingDefault',label:'Thinking Default',type:'select',opts:['off','low','adaptive','on','stream'],desc:'Default thinking mode'},
+            {k:'agents.defaults.verboseDefault',label:'Verbose Default',type:'bool',desc:'Default verbose mode'},
+            {k:'agents.defaults.elevatedDefault',label:'Elevated Default',type:'bool',desc:'Default elevated mode'},
+          ]},
+          { title:'Heartbeat', fields:[
+            {k:'agents.defaults.heartbeat.every',label:'Every',type:'string',desc:'Heartbeat interval (e.g. 30m, 1h)'},
+            {k:'agents.defaults.heartbeat.model',label:'Model',type:'string',desc:'Model for heartbeat'},
+            {k:'agents.defaults.heartbeat.lightContext',label:'Light Context',type:'bool',desc:'Use light context'},
+            {k:'agents.defaults.heartbeat.isolatedSession',label:'Isolated Session',type:'bool',desc:'Isolated session'},
+            {k:'agents.defaults.heartbeat.target',label:'Target',type:'string',desc:'Heartbeat target'},
+            {k:'agents.defaults.heartbeat.directPolicy',label:'Direct Policy',type:'string',desc:'Direct policy'},
+          ]},
+          { title:'Concurrency', fields:[
+            {k:'agents.defaults.maxConcurrent',label:'Max Concurrent',type:'number',desc:'Max concurrent sessions'},
+            {k:'agents.defaults.subagents.maxConcurrent',label:'Subagent Max Concurrent',type:'number',desc:'Max concurrent subagents'},
+            {k:'agents.defaults.subagents.model',label:'Subagent Model',type:'string',desc:'Default subagent model'},
+          ]},
+          { title:'Sandbox', fields:[
+            {k:'agents.defaults.sandbox.mode',label:'Mode',type:'select',opts:['off','non-main','all'],desc:'Sandbox mode'},
+            {k:'agents.defaults.sandbox.scope',label:'Scope',type:'select',opts:['session','agent','shared'],desc:'Sandbox scope'},
+            {k:'agents.defaults.sandbox.backend',label:'Backend',type:'select',opts:['docker','ssh','openshell'],desc:'Sandbox backend'},
+            {k:'agents.defaults.sandbox.workspaceAccess',label:'Workspace Access',type:'select',opts:['none','ro','rw'],desc:'Workspace access level'},
+            {k:'agents.defaults.sandbox.browser.enabled',label:'Browser in Sandbox',type:'bool',desc:'Enable browser in sandbox'},
+          ]},
+          { title:'Model Aliases', fields:[
+            {k:'agents.defaults.models',label:'Model Aliases',type:'kv',desc:'Model aliases (modelId → alias)'},
+          ]},
+          { title:'Media & Image Models', fields:[
+            {k:'agents.defaults.imageModel',label:'Image Model',type:'string',desc:'Model for image analysis'},
+            {k:'agents.defaults.imageGenerationModel',label:'Image Generation Model',type:'string',desc:'Model for image generation'},
+            {k:'agents.defaults.pdfModel',label:'PDF Model',type:'string',desc:'Model for PDF processing'},
+            {k:'agents.defaults.mediaMaxMb',label:'Media Max MB',type:'number',desc:'Max media size in MB'},
+          ]},
+          { title:'Timeouts', fields:[
+            {k:'agents.defaults.timeoutSeconds',label:'Timeout (seconds)',type:'number',desc:'Default timeout in seconds'},
+          ]},
+        ]
       },
-      'models.routing': {
-        label: 'Routing',
-        description: 'Model routing and fallback rules.',
-      }
-    },
-    fields: {
-      'models.default': { type: 'text', label: 'Default Model', default: '', hint: 'Default model identifier (e.g. "openai/gpt-4o").' },
-      'models.providers': { type: 'model-providers', label: 'Providers', default: [], hint: 'List of model providers.' },
-    }
+      { id:'agents.list', label:'Agent List', custom:'agentList' }
+    ]
   },
-  agents: {
-    label: 'Agents',
-    icon: 'agents',
-    description: 'Agent definitions, defaults, and per-agent configuration.',
-    subsections: {
-      'agents.defaults': { label: 'Defaults', description: 'Default settings applied to all agents.' },
-      'agents.list': { label: 'Agent List', description: 'Individual agent definitions.' },
-    },
-    fields: {
-      'agents.defaults.model': { type: 'text', label: 'Default Model', default: '', hint: 'Default model for all agents.', section: 'agents.defaults' },
-      'agents.defaults.imageModel': { type: 'text', label: 'Default Image Model', default: '', hint: 'Default image analysis model.', section: 'agents.defaults' },
-      'agents.defaults.maxTokens': { type: 'number', label: 'Max Tokens', default: 4096, hint: 'Default max tokens per response.', section: 'agents.defaults' },
-      'agents.defaults.maxTurns': { type: 'number', label: 'Max Turns', default: 50, hint: 'Max conversation turns before reset.', section: 'agents.defaults' },
-      'agents.defaults.temperature': { type: 'number', label: 'Temperature', default: 0.7, hint: 'Default temperature (0-2). Lower = more deterministic.', section: 'agents.defaults', step: 0.1, min: 0, max: 2 },
-      'agents.defaults.systemPrompt': { type: 'textarea', label: 'System Prompt', default: '', hint: 'Default system prompt prepended to all agents.', section: 'agents.defaults' },
-      'agents.defaults.thinking': { type: 'select', label: 'Thinking Mode', default: 'off', options: ['off','on','adaptive','stream'], hint: 'Extended thinking mode.', section: 'agents.defaults' },
-      'agents.defaults.compaction.enabled': { type: 'toggle', label: 'Compaction', default: true, hint: 'Enable context window compaction.', section: 'agents.defaults' },
-      'agents.defaults.compaction.threshold': { type: 'number', label: 'Compaction Threshold', default: 0.8, hint: 'Context fill ratio that triggers compaction (0-1).', section: 'agents.defaults', step: 0.05, min: 0, max: 1 },
-      'agents.list': { type: 'agent-list', label: 'Agent Definitions', default: [], hint: 'List of agent configurations.' },
-    }
+  {
+    id:'tools', label:'Tools', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>',
+    groups:[
+      { title:'Exec', fields:[
+        {k:'tools.exec.security',label:'Security',type:'select',opts:['deny','allowlist','full'],desc:'Execution security mode'},
+        {k:'tools.exec.strictInlineEval',label:'Strict Inline Eval',type:'bool',desc:'Strict inline evaluation'},
+        {k:'tools.exec.ask',label:'Ask',type:'select',opts:['off','on-miss','always'],desc:'When to ask for permission'},
+      ]},
+      { title:'Filesystem', fields:[
+        {k:'tools.fs.workspaceOnly',label:'Workspace Only',type:'bool',desc:'Restrict to workspace'},
+      ]},
+      { title:'Elevated', fields:[
+        {k:'tools.elevated.enabled',label:'Enabled',type:'bool',desc:'Allow elevated commands'},
+        {k:'tools.elevated.allowFrom',label:'Allow From',type:'kv-object',desc:'Allow elevated from sources',valType:'json'},
+      ]},
+      { title:'Media / Audio', fields:[
+        {k:'tools.media.audio.enabled',label:'Audio Enabled',type:'bool',desc:'Enable audio processing'},
+        {k:'tools.media.audio.providerOptions',label:'Provider Options',type:'kv-object',desc:'Audio provider options',valType:'json'},
+      ]},
+      { title:'Web Search', fields:[
+        {k:'tools.web.search.enabled',label:'Enabled',type:'bool',desc:'Enable web search'},
+        {k:'tools.web.search.provider',label:'Provider',type:'select',opts:['brave','google'],desc:'Search provider'},
+        {k:'tools.web.search.maxResults',label:'Max Results',type:'number',desc:'Max search results'},
+        {k:'tools.web.search.cacheTtlMinutes',label:'Cache TTL (min)',type:'number',desc:'Cache TTL in minutes'},
+      ]},
+      { title:'Web Fetch', fields:[
+        {k:'tools.web.fetch.enabled',label:'Enabled',type:'bool',desc:'Enable web fetch'},
+        {k:'tools.web.fetch.maxChars',label:'Max Chars',type:'number',desc:'Max characters to fetch'},
+        {k:'tools.web.fetch.cacheTtlMinutes',label:'Cache TTL (min)',type:'number',desc:'Cache TTL in minutes'},
+      ]},
+      { title:'Also Allow', fields:[
+        {k:'tools.alsoAllow',label:'Also Allow',type:'array',desc:'Additional tools to allow'},
+      ]},
+    ]
   },
-  tools: {
-    label: 'Tools',
-    icon: 'tools',
-    description: 'Tool definitions and security policies.',
-    fields: {
-      'tools.security': { type: 'select', label: 'Default Security', default: 'allowlist', options: ['full','allowlist','deny'], hint: 'Default exec security policy.', security: true },
-      'tools.exec.defaultShell': { type: 'text', label: 'Default Shell', default: '/bin/bash', hint: 'Default shell for exec tool.' },
-      'tools.exec.timeout': { type: 'number', label: 'Exec Timeout (s)', default: 300, hint: 'Default exec command timeout in seconds.' },
-      'tools.exec.allowlist': { type: 'array', label: 'Exec Allowlist', default: [], hint: 'Commands allowed in allowlist security mode.' },
-      'tools.exec.denylist': { type: 'array', label: 'Exec Denylist', default: [], hint: 'Commands always denied.' },
-      'tools.sandbox.enabled': { type: 'toggle', label: 'Sandbox Enabled', default: true, hint: 'Run tools in a sandboxed container.', security: true },
-      'tools.sandbox.image': { type: 'text', label: 'Sandbox Image', default: 'openclaw/sandbox:latest', hint: 'Docker image for sandbox containers.' },
-      'tools.sandbox.memory': { type: 'text', label: 'Memory Limit', default: '512m', hint: 'Container memory limit.' },
-      'tools.sandbox.cpus': { type: 'number', label: 'CPU Limit', default: 1, hint: 'Container CPU limit.', step: 0.5 },
-      'tools.sandbox.networkMode': { type: 'select', label: 'Network Mode', default: 'bridge', options: ['bridge','host','none'], hint: 'Container network mode.', security: true },
-      'tools.sandbox.mountWorkspace': { type: 'toggle', label: 'Mount Workspace', default: true, hint: 'Mount host workspace into sandbox.' },
-    }
+  {
+    id:'bindings', label:'Bindings', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
+    custom:'bindingsList'
   },
-  bindings: {
-    label: 'Bindings',
-    icon: 'bindings',
-    description: 'Route channels and patterns to specific agents.',
-    fields: {
-      'bindings': { type: 'binding-list', label: 'Routing Rules', default: [], hint: 'Rules that bind channels/patterns to agents.' },
-    }
+  {
+    id:'messages', label:'Messages / TTS', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+    groups:[
+      { title:'TTS', fields:[
+        {k:'messages.tts.auto',label:'Auto',type:'select',opts:['off','inbound','all'],desc:'When to auto-play TTS'},
+        {k:'messages.tts.provider',label:'Provider',type:'select',opts:['elevenlabs','openai','microsoft'],desc:'TTS provider'},
+      ]},
+      { title:'ElevenLabs Config', fields:[
+        {k:'messages.tts.elevenlabs.voiceId',label:'Voice ID',type:'string',desc:'ElevenLabs voice ID'},
+        {k:'messages.tts.elevenlabs.model',label:'Model',type:'string',desc:'ElevenLabs model'},
+        {k:'messages.tts.elevenlabs.stability',label:'Stability',type:'number',desc:'Voice stability (0-1)'},
+        {k:'messages.tts.elevenlabs.similarityBoost',label:'Similarity Boost',type:'number',desc:'Similarity boost (0-1)'},
+      ]},
+      { title:'OpenAI TTS Config', fields:[
+        {k:'messages.tts.openai.voice',label:'Voice',type:'string',desc:'OpenAI TTS voice'},
+        {k:'messages.tts.openai.model',label:'Model',type:'string',desc:'OpenAI TTS model'},
+      ]},
+      { title:'Microsoft TTS Config', fields:[
+        {k:'messages.tts.microsoft.voice',label:'Voice',type:'string',desc:'Microsoft voice'},
+        {k:'messages.tts.microsoft.region',label:'Region',type:'string',desc:'Azure region'},
+      ]},
+    ]
   },
-  messages: {
-    label: 'Messages & TTS',
-    icon: 'messages',
-    description: 'Message handling, text-to-speech, and response settings.',
-    fields: {
-      'messages.maxLength': { type: 'number', label: 'Max Message Length', default: 4000, hint: 'Maximum outgoing message length (chars).' },
-      'messages.splitLong': { type: 'toggle', label: 'Split Long Messages', default: true, hint: 'Split messages exceeding max length.' },
-      'messages.typingIndicator': { type: 'toggle', label: 'Typing Indicator', default: true, hint: 'Show typing indicator while processing.' },
-      'messages.reactions.enabled': { type: 'toggle', label: 'Reactions Enabled', default: false, hint: 'Enable emoji reactions on messages.' },
-      'messages.reactions.mode': { type: 'select', label: 'Reactions Mode', default: 'off', options: ['off','minimal','full'], hint: 'Reaction behavior mode.' },
-      'tts.enabled': { type: 'toggle', label: 'TTS Enabled', default: false, hint: 'Enable text-to-speech output.' },
-      'tts.provider': { type: 'select', label: 'TTS Provider', default: 'elevenlabs', options: ['elevenlabs','openai','system'], hint: 'TTS service provider.' },
-      'tts.voice': { type: 'text', label: 'Voice ID / Name', default: '', hint: 'Voice identifier for TTS.' },
-      'tts.apiKey': { type: 'secretref', label: 'TTS API Key', hint: 'API key for TTS provider (SecretRef).', security: true },
-    }
+  {
+    id:'commands', label:'Commands', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+    fields:[
+      {k:'commands.native',label:'Native',type:'select',opts:['auto','true','false'],desc:'Native command mode'},
+      {k:'commands.nativeSkills',label:'Native Skills',type:'bool',desc:'Enable native skills'},
+      {k:'commands.bash',label:'Bash',type:'bool',desc:'Allow bash commands'},
+      {k:'commands.restart',label:'Restart',type:'bool',desc:'Allow restart'},
+      {k:'commands.config',label:'Config',type:'bool',desc:'Allow config command'},
+      {k:'commands.debug',label:'Debug',type:'bool',desc:'Allow debug'},
+    ]
   },
-  commands: {
-    label: 'Commands',
-    icon: 'commands',
-    description: 'Slash commands and custom command definitions.',
-    fields: {
-      'commands.prefix': { type: 'text', label: 'Command Prefix', default: '/', hint: 'Prefix character for slash commands.' },
-      'commands.enabled': { type: 'toggle', label: 'Commands Enabled', default: true, hint: 'Enable slash command processing.' },
-      'commands.custom': { type: 'command-list', label: 'Custom Commands', default: [], hint: 'Custom slash command definitions.' },
-    }
+  {
+    id:'channels', label:'Channels', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0118 0"/><path d="M4 11a5 5 0 0110 0"/><line x1="4" y1="11" x2="4" y2="11.01"/></svg>',
+    subs:[
+      { id:'channels.whatsapp', label:'WhatsApp',
+        groups:[
+          { title:'General', fields:[
+            {k:'channels.whatsapp.enabled',label:'Enabled',type:'bool',desc:'Enable WhatsApp'},
+            {k:'channels.whatsapp.dmPolicy',label:'DM Policy',type:'select',opts:['pairing','allowlist','open','disabled'],desc:'DM policy'},
+            {k:'channels.whatsapp.groupPolicy',label:'Group Policy',type:'select',opts:['allowlist','open','disabled'],desc:'Group policy'},
+            {k:'channels.whatsapp.sendReadReceipts',label:'Send Read Receipts',type:'bool',desc:'Send read receipts'},
+            {k:'channels.whatsapp.debounceMs',label:'Debounce (ms)',type:'number',desc:'Debounce in ms'},
+            {k:'channels.whatsapp.mediaMaxMb',label:'Media Max MB',type:'number',desc:'Max media size'},
+            {k:'channels.whatsapp.selfChatMode',label:'Self Chat Mode',type:'string',desc:'Self chat mode'},
+            {k:'channels.whatsapp.textChunkLimit',label:'Text Chunk Limit',type:'number',desc:'Max text chunk'},
+          ]},
+          { title:'Allow List', fields:[
+            {k:'channels.whatsapp.allowFrom',label:'Allow From',type:'array',desc:'Allowed phone numbers/JIDs'},
+          ]},
+          { title:'Actions', fields:[
+            {k:'channels.whatsapp.actions.reactions',label:'Reactions',type:'bool',desc:'Enable reactions'},
+            {k:'channels.whatsapp.actions.sendMessage',label:'Send Message',type:'bool',desc:'Enable sending'},
+            {k:'channels.whatsapp.actions.polls',label:'Polls',type:'bool',desc:'Enable polls'},
+          ]},
+        ]
+      },
+      { id:'channels.telegram', label:'Telegram',
+        groups:[
+          { title:'General', fields:[
+            {k:'channels.telegram.enabled',label:'Enabled',type:'bool',desc:'Enable Telegram'},
+            {k:'channels.telegram.dmPolicy',label:'DM Policy',type:'select',opts:['pairing','allowlist','open','disabled'],desc:'DM policy'},
+            {k:'channels.telegram.groupPolicy',label:'Group Policy',type:'select',opts:['allowlist','open','disabled'],desc:'Group policy'},
+            {k:'channels.telegram.streaming',label:'Streaming',type:'select',opts:['off','partial','block','progress'],desc:'Streaming mode'},
+            {k:'channels.telegram.historyLimit',label:'History Limit',type:'number',desc:'Message history limit'},
+            {k:'channels.telegram.linkPreview',label:'Link Preview',type:'bool',desc:'Enable link previews'},
+            {k:'channels.telegram.replyToMode',label:'Reply To Mode',type:'select',opts:['off','first','all'],desc:'Reply mode'},
+          ]},
+          { title:'Actions', fields:[
+            {k:'channels.telegram.actions.reactions',label:'Reactions',type:'bool',desc:'Enable reactions'},
+            {k:'channels.telegram.actions.sendMessage',label:'Send Message',type:'bool',desc:'Enable sending'},
+          ]},
+          { title:'Accounts', fields:[
+            {k:'channels.telegram.accounts',label:'Accounts',type:'kv-object',desc:'Bot accounts (name → config)',valType:'json'},
+          ]},
+          { title:'Custom Commands', fields:[
+            {k:'channels.telegram.customCommands',label:'Custom Commands',type:'kv-object',desc:'Custom commands (cmd → desc)',valType:'string'},
+          ]},
+        ]
+      },
+      { id:'channels.discord', label:'Discord',
+        groups:[
+          { title:'General', fields:[
+            {k:'channels.discord.enabled',label:'Enabled',type:'bool',desc:'Enable Discord'},
+            {k:'channels.discord.token',label:'Token',type:'secretRef',desc:'Discord bot token'},
+            {k:'channels.discord.dmPolicy',label:'DM Policy',type:'select',opts:['pairing','allowlist','open','disabled'],desc:'DM policy'},
+            {k:'channels.discord.allowBots',label:'Allow Bots',type:'bool',desc:'Allow bot interactions'},
+            {k:'channels.discord.mediaMaxMb',label:'Media Max MB',type:'number',desc:'Max media size'},
+            {k:'channels.discord.replyToMode',label:'Reply To Mode',type:'select',opts:['off','first','all'],desc:'Reply mode'},
+            {k:'channels.discord.streaming',label:'Streaming',type:'select',opts:['off','partial','block','progress'],desc:'Streaming mode'},
+            {k:'channels.discord.historyLimit',label:'History Limit',type:'number',desc:'History limit'},
+            {k:'channels.discord.textChunkLimit',label:'Text Chunk Limit',type:'number',desc:'Chunk limit'},
+          ]},
+          { title:'Thread Bindings', fields:[
+            {k:'channels.discord.threadBindings',label:'Thread Bindings',type:'kv-object',desc:'threadId → agentId',valType:'string'},
+          ]},
+          { title:'Guilds', fields:[
+            {k:'channels.discord.guilds',label:'Guilds',type:'kv-object',desc:'Guild configs',valType:'json'},
+          ]},
+          { title:'Actions', fields:[
+            {k:'channels.discord.actions.reactions',label:'Reactions',type:'bool',desc:'Enable reactions'},
+            {k:'channels.discord.actions.sendMessage',label:'Send Message',type:'bool',desc:'Enable sending'},
+            {k:'channels.discord.actions.threads',label:'Threads',type:'bool',desc:'Thread creation'},
+            {k:'channels.discord.actions.voiceJoin',label:'Voice Join',type:'bool',desc:'Voice join'},
+            {k:'channels.discord.actions.voiceSpeak',label:'Voice Speak',type:'bool',desc:'Voice speak'},
+          ]},
+          { title:'Voice', fields:[
+            {k:'channels.discord.voice',label:'Voice Config',type:'kv-object',desc:'Voice configuration',valType:'json'},
+          ]},
+        ]
+      },
+    ]
   },
-  channels: {
-    label: 'Channels',
-    icon: 'channels',
-    description: 'Messaging channel integrations (WhatsApp, Telegram, etc.).',
-    subsections: {
-      'channels.whatsapp': { label: 'WhatsApp', description: 'WhatsApp Business API integration.' },
-      'channels.telegram': { label: 'Telegram', description: 'Telegram Bot API integration.' },
-      'channels.discord': { label: 'Discord', description: 'Discord bot integration.' },
-      'channels.slack': { label: 'Slack', description: 'Slack app integration.' },
-    },
-    fields: {
-      // WhatsApp
-      'channels.whatsapp.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable WhatsApp channel.', section: 'channels.whatsapp' },
-      'channels.whatsapp.provider': { type: 'select', label: 'Provider', default: 'baileys', options: ['baileys','cloud-api','twilio'], hint: 'WhatsApp connection method.', section: 'channels.whatsapp' },
-      'channels.whatsapp.phoneNumber': { type: 'text', label: 'Phone Number', default: '', hint: 'WhatsApp phone number.', section: 'channels.whatsapp' },
-      'channels.whatsapp.apiToken': { type: 'secretref', label: 'API Token', hint: 'WhatsApp API token (SecretRef).', section: 'channels.whatsapp', security: true },
-      'channels.whatsapp.webhookPath': { type: 'text', label: 'Webhook Path', default: '/webhook/whatsapp', hint: 'Webhook endpoint path.', section: 'channels.whatsapp' },
-      // Telegram
-      'channels.telegram.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Telegram channel.', section: 'channels.telegram' },
-      'channels.telegram.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Telegram Bot API token (SecretRef).', section: 'channels.telegram', security: true },
-      'channels.telegram.webhookUrl': { type: 'text', label: 'Webhook URL', default: '', hint: 'Public URL for Telegram webhooks.', section: 'channels.telegram' },
-      'channels.telegram.allowedChatIds': { type: 'array', label: 'Allowed Chat IDs', default: [], hint: 'Restrict to these chat IDs. Empty = allow all.', section: 'channels.telegram', security: true },
-      'channels.telegram.polling': { type: 'toggle', label: 'Polling Mode', default: false, hint: 'Use long polling instead of webhooks.', section: 'channels.telegram' },
-      // Discord
-      'channels.discord.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Discord channel.', section: 'channels.discord' },
-      'channels.discord.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Discord bot token (SecretRef).', section: 'channels.discord', security: true },
-      'channels.discord.applicationId': { type: 'text', label: 'Application ID', default: '', hint: 'Discord application ID.', section: 'channels.discord' },
-      'channels.discord.allowedGuildIds': { type: 'array', label: 'Allowed Guild IDs', default: [], hint: 'Restrict to these guild IDs.', section: 'channels.discord', security: true },
-      'channels.discord.allowedChannelIds': { type: 'array', label: 'Allowed Channel IDs', default: [], hint: 'Restrict to these channel IDs.', section: 'channels.discord', security: true },
-      // Slack
-      'channels.slack.enabled': { type: 'toggle', label: 'Enabled', default: false, hint: 'Enable Slack channel.', section: 'channels.slack' },
-      'channels.slack.botToken': { type: 'secretref', label: 'Bot Token', hint: 'Slack bot token (SecretRef).', section: 'channels.slack', security: true },
-      'channels.slack.appToken': { type: 'secretref', label: 'App Token', hint: 'Slack app-level token for socket mode (SecretRef).', section: 'channels.slack', security: true },
-      'channels.slack.signingSecret': { type: 'secretref', label: 'Signing Secret', hint: 'Slack signing secret (SecretRef).', section: 'channels.slack', security: true },
-    }
+  {
+    id:'gateway', label:'Gateway', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+    groups:[
+      { title:'Server', fields:[
+        {k:'gateway.port',label:'Port',type:'number',desc:'Gateway port'},
+        {k:'gateway.mode',label:'Mode',type:'select',opts:['local','lan','tailscale'],desc:'Gateway mode'},
+        {k:'gateway.bind',label:'Bind',type:'select',opts:['loopback','lan'],desc:'Bind address'},
+      ]},
+      { title:'Auth', fields:[
+        {k:'gateway.auth.mode',label:'Auth Mode',type:'select',opts:['token','password','none'],desc:'Auth mode'},
+        {k:'gateway.auth.rateLimit',label:'Rate Limit',type:'string',desc:'Rate limit config'},
+      ]},
+      { title:'Control UI', fields:[
+        {k:'gateway.controlUi.allowedOrigins',label:'Allowed Origins',type:'array',desc:'CORS origins'},
+      ]},
+      { title:'Network', fields:[
+        {k:'gateway.trustedProxies',label:'Trusted Proxies',type:'array',desc:'Trusted proxies'},
+      ]},
+      { title:'Tailscale', fields:[
+        {k:'gateway.tailscale.mode',label:'Tailscale Mode',type:'select',opts:['off','serve','funnel'],desc:'Tailscale mode'},
+      ]},
+      { title:'Reload', fields:[
+        {k:'gateway.reload.mode',label:'Reload Mode',type:'string',desc:'Config reload mode'},
+        {k:'gateway.reload.debounceMs',label:'Debounce (ms)',type:'number',desc:'Reload debounce'},
+      ]},
+    ]
   },
-  gateway: {
-    label: 'Gateway',
-    icon: 'gateway',
-    description: 'Gateway server configuration (HTTP, WebSocket, SSL).',
-    fields: {
-      'gateway.bind': { type: 'text', label: 'Bind Address', default: '0.0.0.0', hint: 'Address to bind the gateway server.', security: true },
-      'gateway.port': { type: 'number', label: 'Port', default: 3120, hint: 'Gateway HTTP port.' },
-      'gateway.remote.url': { type: 'text', label: 'Remote URL', default: '', hint: 'Public URL for the gateway (for webhooks).' },
-      'gateway.remote.tls': { type: 'toggle', label: 'TLS Enabled', default: true, hint: 'Enable TLS on the gateway.' },
-      'gateway.cors.enabled': { type: 'toggle', label: 'CORS Enabled', default: true, hint: 'Enable CORS on the gateway.' },
-      'gateway.cors.origins': { type: 'array', label: 'CORS Origins', default: [], hint: 'Allowed CORS origins.', security: true },
-      'gateway.rateLimit.enabled': { type: 'toggle', label: 'Rate Limiting', default: true, hint: 'Enable request rate limiting.', security: true },
-      'gateway.rateLimit.maxRequests': { type: 'number', label: 'Max Requests', default: 100, hint: 'Max requests per window.' },
-      'gateway.rateLimit.windowMs': { type: 'number', label: 'Window (ms)', default: 60000, hint: 'Rate limit time window in ms.' },
-      'gateway.trustedProxies': { type: 'array', label: 'Trusted Proxies', default: [], hint: 'Trusted proxy IPs/CIDRs for X-Forwarded-For.', security: true },
-      'gateway.websocket.enabled': { type: 'toggle', label: 'WebSocket', default: true, hint: 'Enable WebSocket connections.' },
-      'gateway.websocket.pingInterval': { type: 'number', label: 'Ping Interval (ms)', default: 30000, hint: 'WebSocket ping interval.' },
-    }
+  {
+    id:'plugins', label:'Plugins', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg>',
+    groups:[
+      { title:'Allow List', fields:[
+        {k:'plugins.allow',label:'Allowed Plugins',type:'array',desc:'Allowed plugin names'},
+      ]},
+      { title:'Plugin Entries', fields:[
+        {k:'plugins.entries',label:'Entries',type:'kv-object',desc:'Plugin configs (name → {enabled, config})',valType:'json'},
+      ]},
+    ]
   },
-  plugins: {
-    label: 'Plugins',
-    icon: 'plugins',
-    description: 'Plugin system configuration and plugin entries.',
-    fields: {
-      'plugins.enabled': { type: 'toggle', label: 'Plugins Enabled', default: true, hint: 'Enable the plugin system.' },
-      'plugins.directory': { type: 'text', label: 'Plugin Directory', default: './plugins', hint: 'Path to plugin directory.' },
-      'plugins.entries': { type: 'plugin-list', label: 'Plugin Entries', default: [], hint: 'List of configured plugins.' },
-    }
+  {
+    id:'acp', label:'ACP', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+    fields:[
+      {k:'acp.enabled',label:'Enabled',type:'bool',desc:'Enable ACP'},
+      {k:'acp.defaultAgent',label:'Default Agent',type:'string',desc:'Default ACP agent'},
+      {k:'acp.backend',label:'Backend',type:'string',desc:'ACP backend'},
+      {k:'acp.dispatch.enabled',label:'Dispatch Enabled',type:'bool',desc:'Enable dispatch'},
+      {k:'acp.allowedAgents',label:'Allowed Agents',type:'array',desc:'Allowed agent IDs'},
+      {k:'acp.maxConcurrentSessions',label:'Max Concurrent',type:'number',desc:'Max concurrent ACP sessions'},
+      {k:'acp.stream',label:'Stream Config',type:'kv-object',desc:'Stream configuration',valType:'json'},
+      {k:'acp.runtime.ttlMinutes',label:'Runtime TTL (min)',type:'number',desc:'Runtime TTL in minutes'},
+    ]
   },
-  acp: {
-    label: 'ACP',
-    icon: 'acp',
-    description: 'Agent Communication Protocol settings.',
-    fields: {
-      'acp.enabled': { type: 'toggle', label: 'ACP Enabled', default: false, hint: 'Enable ACP for multi-agent communication.' },
-      'acp.port': { type: 'number', label: 'ACP Port', default: 3121, hint: 'Port for ACP server.' },
-      'acp.auth.required': { type: 'toggle', label: 'Auth Required', default: true, hint: 'Require authentication for ACP.', security: true },
-      'acp.auth.token': { type: 'secretref', label: 'ACP Token', hint: 'Authentication token for ACP (SecretRef).', security: true },
-      'acp.allowedAgents': { type: 'array', label: 'Allowed Agents', default: [], hint: 'Agent IDs allowed to connect. Empty = all.', security: true },
-      'acp.maxConcurrent': { type: 'number', label: 'Max Concurrent', default: 5, hint: 'Maximum concurrent ACP sessions.' },
-      'acp.timeout': { type: 'number', label: 'Timeout (s)', default: 300, hint: 'ACP session timeout in seconds.' },
-    }
+  {
+    id:'session', label:'Session', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    fields:[
+      {k:'session.dmScope',label:'DM Scope',type:'select',opts:['default','per-channel-peer','per-account-channel-peer'],desc:'DM session scope'},
+      {k:'session.mainKey',label:'Main Key',type:'string',desc:'Main session key'},
+    ]
   },
-};
+];
 
-// ============================================================
-// STATE
-// ============================================================
-
+// ==================== STATE ====================
 let config = {};
-let defaults = {};
-let modifiedKeys = new Set();
 let activeSection = null;
-let activeSubsection = null;
 let previewOpen = false;
 
-// Build defaults map
-function buildDefaults() {
-  defaults = {};
-  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
-    for (const [fieldKey, field] of Object.entries(section.fields || {})) {
-      if (field.default !== undefined) {
-        defaults[fieldKey] = JSON.parse(JSON.stringify(field.default));
-      }
-    }
-  }
-}
-
-function initConfig() {
-  // Build nested config from flat defaults using deepSet
-  config = {};
-  for (const [key, val] of Object.entries(defaults)) {
-    if (key.startsWith('$')) {
-      config[key] = JSON.parse(JSON.stringify(val));
-    } else {
-      deepSet(config, key, JSON.parse(JSON.stringify(val)));
-    }
-  }
-}
-
-// ============================================================
-// DEEP GET / SET
-// ============================================================
-
+// ==================== UTILITY ====================
 function deepGet(obj, path) {
-  const parts = path.split('.');
+  return path.split('.').reduce((o, k) => (o && o[k] !== undefined) ? o[k] : undefined, obj);
+}
+function deepSet(obj, path, val) {
+  const keys = path.split('.');
   let cur = obj;
-  for (const p of parts) {
-    if (cur == null || typeof cur !== 'object') return undefined;
-    cur = cur[p];
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (cur[keys[i]] === undefined || typeof cur[keys[i]] !== 'object' || Array.isArray(cur[keys[i]])) cur[keys[i]] = {};
+    cur = cur[keys[i]];
   }
-  return cur;
+  if (val === undefined || val === '') delete cur[keys[keys.length - 1]];
+  else cur[keys[keys.length - 1]] = val;
 }
-
-function deepSet(obj, path, value) {
-  const parts = path.split('.');
-  let cur = obj;
-  for (let i = 0; i < parts.length - 1; i++) {
-    if (cur[parts[i]] === undefined || typeof cur[parts[i]] !== 'object') {
-      cur[parts[i]] = {};
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+function cleanObj(obj) {
+  if (Array.isArray(obj)) {
+    const a = obj.map(cleanObj).filter(v => v !== undefined);
+    return a.length ? a : undefined;
+  }
+  if (obj && typeof obj === 'object') {
+    const o = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const c = cleanObj(v);
+      if (c !== undefined) o[k] = c;
     }
-    cur = cur[parts[i]];
+    return Object.keys(o).length ? o : undefined;
   }
-  cur[parts[parts.length - 1]] = value;
+  if (obj === '' || obj === undefined || obj === null) return undefined;
+  return obj;
 }
+function getExportConfig() { return cleanObj(deepClone(config)) || {}; }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function deepDelete(obj, path) {
-  const parts = path.split('.');
-  let cur = obj;
-  for (let i = 0; i < parts.length - 1; i++) {
-    if (cur == null || typeof cur !== 'object') return;
-    cur = cur[parts[i]];
-  }
-  if (cur != null && typeof cur === 'object') {
-    delete cur[parts[parts.length - 1]];
-  }
-}
-
-// ============================================================
-// FLATTEN / UNFLATTEN CONFIG (for JSON export)
-// ============================================================
-
-function flattenToNested(flat) {
-  const out = {};
-  for (const [key, val] of Object.entries(flat)) {
-    if (key.startsWith('$')) {
-      out[key] = val;
-    } else {
-      deepSet(out, key, val);
-    }
-  }
-  return out;
-}
-
-function nestedToFlat(obj, prefix = '') {
-  const flat = {};
-  for (const [key, val] of Object.entries(obj)) {
-    const path = prefix ? `${prefix}.${key}` : key;
-    if (val != null && typeof val === 'object' && !Array.isArray(val)) {
-      // Check if this is a known leaf field (secretref, complex types)
-      const fieldDef = findFieldDef(path);
-      if (fieldDef && (fieldDef.type === 'secretref' || fieldDef.type === 'model-providers' || fieldDef.type === 'agent-list' || fieldDef.type === 'binding-list' || fieldDef.type === 'plugin-list' || fieldDef.type === 'command-list')) {
-        flat[path] = val;
-      } else {
-        Object.assign(flat, nestedToFlat(val, path));
-      }
-    } else {
-      flat[path] = val;
-    }
-  }
-  return flat;
-}
-
-function findFieldDef(path) {
-  for (const section of Object.values(SCHEMA)) {
-    if (section.fields && section.fields[path]) return section.fields[path];
-  }
-  return null;
-}
-
-// ============================================================
-// CONFIG VALUE MANAGEMENT
-// ============================================================
-
-function getVal(key) {
-  return deepGet(config, key);
-}
-
-function setVal(key, val) {
-  deepSet(config, key, val);
-  // Check if modified from default
-  const def = defaults[key];
-  if (JSON.stringify(val) !== JSON.stringify(def)) {
-    modifiedKeys.add(key);
-  } else {
-    modifiedKeys.delete(key);
-  }
-  updateStatusBar();
-  updatePreview();
-  updateSidebarModified();
-}
-
-// ============================================================
-// GENERATE EXPORT JSON
-// ============================================================
-
-function generateJSON() {
-  const nested = {};
-  // Walk through schema and build nested from config
-  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
-    for (const [fieldKey, fieldDef] of Object.entries(section.fields || {})) {
-      const val = deepGet(config, fieldKey);
-      if (val === undefined || val === '' || (Array.isArray(val) && val.length === 0)) continue;
-      // Skip default values unless they're meaningful
-      if (JSON.stringify(val) === JSON.stringify(fieldDef.default) && !modifiedKeys.has(fieldKey)) continue;
-      
-      if (fieldKey.startsWith('$')) {
-        nested[fieldKey] = val;
-      } else {
-        deepSet(nested, fieldKey, val);
-      }
-    }
-  }
-  
-  // Also include any unknown keys from import
-  if (config._extra) {
-    for (const [k, v] of Object.entries(config._extra)) {
-      deepSet(nested, k, v);
-    }
-  }
-  
-  return nested;
-}
-
-// ============================================================
-// UI RENDERING
-// ============================================================
-
+// ==================== RENDER SIDEBAR ====================
 function renderSidebar() {
-  const sidebar = document.getElementById('sidebar');
+  const sb = document.getElementById('sidebar');
   let html = '';
-  for (const [key, section] of Object.entries(SCHEMA)) {
-    const isActive = activeSection === key;
-    const hasSubs = section.subsections && Object.keys(section.subsections).length > 0;
-    const expanded = isActive ? 'expanded' : '';
-    const active = isActive ? 'active' : '';
-    
-    html += `<div class="sidebar-section">`;
-    html += `<div class="sidebar-header ${expanded} ${active}" onclick="selectSection('${key}')">`;
-    html += `<span class="icon">${icon(section.icon)}</span>`;
-    html += `<span>${section.label}</span>`;
-    if (hasSubs) html += `<span class="chevron">▶</span>`;
-    html += `</div>`;
-    
+  for (const sec of SECTIONS) {
+    const hasSubs = sec.subs && sec.subs.length;
+    const isSubActive = hasSubs && sec.subs.some(s => s.id === activeSection);
+    const isActive = activeSection === sec.id || (!hasSubs && activeSection === sec.id);
+    html += '<div class="sb-sec">';
+    html += '<div class="sb-hdr' + (isActive || isSubActive ? ' active' : '') + (isSubActive ? ' exp' : '') + '" data-sec="' + sec.id + '" onclick="clickSection(\'' + sec.id + '\')">';
+    html += '<span class="ico">' + sec.icon + '</span>' + sec.label;
+    if (hasSubs) html += '<span class="chv">\u25B6</span>';
+    html += '</div>';
     if (hasSubs) {
-      html += `<div class="sidebar-items">`;
-      // "General" sub for fields without a subsection
-      const hasGeneralFields = Object.values(section.fields || {}).some(f => !f.section);
-      if (hasGeneralFields) {
-        const subActive = isActive && !activeSubsection ? 'active' : '';
-        html += `<div class="sidebar-item ${subActive}" onclick="selectSubsection('${key}', null)">General</div>`;
+      html += '<div class="sb-items">';
+      for (const sub of sec.subs) {
+        html += '<div class="sb-item' + (activeSection === sub.id ? ' active' : '') + '" data-sec="' + sub.id + '" onclick="clickSection(\'' + sub.id + '\')">' + sub.label + '</div>';
       }
-      for (const [subKey, sub] of Object.entries(section.subsections)) {
-        const subActive = activeSubsection === subKey ? 'active' : '';
-        // Check if any field in this subsection is modified
-        const hasModified = Object.entries(section.fields || {}).some(([fk, fd]) => fd.section === subKey && modifiedKeys.has(fk));
-        html += `<div class="sidebar-item ${subActive}" onclick="selectSubsection('${key}', '${subKey}')">`;
-        html += sub.label;
-        if (hasModified) html += `<span class="modified-dot"></span>`;
-        html += `</div>`;
-      }
-      html += `</div>`;
+      html += '</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   }
-  sidebar.innerHTML = html;
+  sb.innerHTML = html;
 }
 
-function selectSection(key) {
-  if (activeSection === key && !SCHEMA[key].subsections) {
-    // Already selected, do nothing
+function clickSection(id) {
+  const sec = SECTIONS.find(s => s.id === id);
+  if (sec && sec.subs) {
+    const hdr = document.querySelector('.sb-hdr[data-sec="' + id + '"]');
+    if (hdr) hdr.classList.toggle('exp');
+    if (!sec.subs.find(s => s.id === activeSection)) {
+      activeSection = sec.subs[0].id;
+      renderSidebar();
+      renderContent();
+      updatePreview();
+    }
     return;
   }
-  activeSection = key;
-  activeSubsection = null;
-  renderSidebar();
-  renderContent();
-}
-
-function selectSubsection(sectionKey, subKey) {
-  activeSection = sectionKey;
-  activeSubsection = subKey;
-  renderSidebar();
-  renderContent();
-}
-
-function renderContent() {
-  const content = document.getElementById('content');
-  if (!activeSection) {
-    content.innerHTML = `<div class="empty-state">${icon('settings')}<p>Select a section from the sidebar to begin editing</p></div>`;
-    return;
-  }
-  
-  const section = SCHEMA[activeSection];
-  let html = '';
-  
-  // Section header
-  html += `<div class="section-title">${icon(section.icon)} ${section.label}</div>`;
-  html += `<div class="section-desc">${section.description}</div>`;
-  
-  // If has subsections, render tab bar
-  if (section.subsections) {
-    html += `<div class="tab-bar">`;
-    const hasGeneralFields = Object.values(section.fields || {}).some(f => !f.section);
-    if (hasGeneralFields) {
-      const cls = !activeSubsection ? 'active' : '';
-      html += `<button class="tab-btn ${cls}" onclick="selectSubsection('${activeSection}', null)">General</button>`;
-    }
-    for (const [subKey, sub] of Object.entries(section.subsections)) {
-      const cls = activeSubsection === subKey ? 'active' : '';
-      html += `<button class="tab-btn ${cls}" onclick="selectSubsection('${activeSection}', '${subKey}')">${sub.label}</button>`;
-    }
-    html += `</div>`;
-  }
-  
-  // Filter fields for current subsection
-  const fields = Object.entries(section.fields || {}).filter(([key, fd]) => {
-    if (section.subsections) {
-      if (activeSubsection) return fd.section === activeSubsection;
-      return !fd.section;
-    }
-    return true;
-  });
-  
-  // Render fields
-  for (const [fieldKey, fieldDef] of fields) {
-    html += renderField(fieldKey, fieldDef);
-  }
-  
-  content.innerHTML = html;
-  updateStatusBar();
-}
-
-function renderField(key, def) {
-  // Complex types
-  if (def.type === 'agent-list') return renderAgentList();
-  if (def.type === 'binding-list') return renderBindingList();
-  if (def.type === 'plugin-list') return renderPluginList();
-  if (def.type === 'command-list') return renderCommandList();
-  if (def.type === 'model-providers') return renderModelProviders();
-  
-  const modified = modifiedKeys.has(key);
-  const typeIconName = fieldTypeIcon(def);
-  let badges = '';
-  if (def.type === 'secretref') badges += `<span class="badge badge-secret">${icon('lock')} SecretRef</span>`;
-  if (def.security) badges += `<span class="badge badge-security">${icon('shieldAlert')} Security</span>`;
-  if (modified) badges += `<span class="badge badge-changed">Changed</span>`;
-  const req = def.required ? `<span class="required">*</span>` : '';
-  
-  // Check for active security warning
-  const val = getVal(key);
-  const secWarning = def.security && val !== undefined ? getSecurityWarning(key, val) : null;
-  if (secWarning) {
-    badges += ` <span class="badge-warning">${icon('warning')} Permissive</span>`;
-  }
-  
-  let html = `<div class="field-group" id="field-${key.replace(/\./g, '-')}">`;
-  html += `<div class="field-label"><span class="field-icon">${icon(typeIconName)}</span> ${def.label} ${req} ${badges}</div>`;
-  
-  const modCls = modified ? 'modified' : '';
-  
-  switch (def.type) {
-    case 'text':
-    case 'password':
-      html += `<input type="${def.type}" class="${modCls}" value="${escHtml(val || '')}" placeholder="${escHtml(def.default || '')}" onchange="setVal('${key}', this.value)" />`;
-      break;
-    
-    case 'number':
-      const step = def.step || 1;
-      const min = def.min !== undefined ? `min="${def.min}"` : '';
-      const max = def.max !== undefined ? `max="${def.max}"` : '';
-      html += `<input type="number" class="${modCls}" value="${val !== undefined ? val : ''}" placeholder="${def.default}" step="${step}" ${min} ${max} onchange="setVal('${key}', parseFloat(this.value))" />`;
-      break;
-    
-    case 'toggle':
-      const checked = val ? 'checked' : '';
-      html += `<div class="toggle-wrap">`;
-      html += `<label class="toggle"><input type="checkbox" ${checked} onchange="setVal('${key}', this.checked)"><span class="slider"></span></label>`;
-      html += `<span class="toggle-label">${val ? 'Enabled' : 'Disabled'}</span>`;
-      html += `</div>`;
-      break;
-    
-    case 'select':
-      html += `<select class="${modCls}" onchange="setVal('${key}', this.value)">`;
-      for (const opt of (def.options || [])) {
-        const sel = val === opt ? 'selected' : '';
-        html += `<option value="${opt}" ${sel}>${opt}</option>`;
+  activeSection = id;
+  for (const s of SECTIONS) {
+    if (s.subs) {
+      if (s.subs.find(ss => ss.id === id)) {
+        const hdr = document.querySelector('.sb-hdr[data-sec="' + s.id + '"]');
+        if (hdr && !hdr.classList.contains('exp')) hdr.classList.add('exp');
+        break;
       }
-      html += `</select>`;
-      break;
-    
-    case 'textarea':
-      html += `<textarea class="${modCls}" rows="4" placeholder="${escHtml(def.default || '')}" onchange="setVal('${key}', this.value)">${escHtml(val || '')}</textarea>`;
-      break;
-    
-    case 'array':
-      html += renderArrayField(key, val || []);
-      break;
-    
-    case 'secretref':
-      html += renderSecretRef(key, val || {});
-      break;
-  }
-  
-  if (def.hint) html += `<div class="field-hint">${def.hint}</div>`;
-  
-  // Security warning for permissive values
-  if (secWarning) {
-    html += `<div class="field-security-warning">${icon('shieldAlert')} ${secWarning}</div>`;
-  }
-  
-  html += `</div>`;
-  return html;
-}
-
-function renderArrayField(key, arr) {
-  let html = `<div class="array-field" id="array-${key.replace(/\./g, '-')}">`;
-  arr.forEach((item, i) => {
-    html += `<div class="array-item">`;
-    html += `<input type="text" value="${escHtml(String(item))}" onchange="updateArrayItem('${key}', ${i}, this.value)" />`;
-    html += `<button class="btn-remove" onclick="removeArrayItem('${key}', ${i})">${icon('close')}</button>`;
-    html += `</div>`;
-  });
-  html += `<button class="btn btn-sm array-add" onclick="addArrayItem('${key}')">${icon('plus')} Add</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function renderSecretRef(key, val) {
-  if (typeof val === 'string') {
-    // Plain string value - offer to convert to SecretRef
-    let html = `<div>`;
-    html += `<input type="text" value="${escHtml(val)}" placeholder="Plain value or convert to SecretRef" onchange="setVal('${key}', this.value)" />`;
-    html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToSecretRef('${key}')">${icon('lock')} Convert to SecretRef</button>`;
-    html += `</div>`;
-    return html;
-  }
-  let html = `<div class="secretref-fields">`;
-  html += `<input type="text" value="${escHtml(val.source || '')}" placeholder="source (env, vault...)" onchange="updateSecretRef('${key}', 'source', this.value)" />`;
-  html += `<input type="text" value="${escHtml(val.provider || '')}" placeholder="provider" onchange="updateSecretRef('${key}', 'provider', this.value)" />`;
-  html += `<input type="text" value="${escHtml(val.id || '')}" placeholder="secret id / key name" onchange="updateSecretRef('${key}', 'id', this.value)" />`;
-  html += `</div>`;
-  html += `<button class="btn btn-sm" style="margin-top:6px" onclick="convertToPlainValue('${key}')">${icon('text')} Use plain value</button>`;
-  return html;
-}
-
-// ============================================================
-// AGENT LIST EDITOR
-// ============================================================
-
-function renderAgentList() {
-  const agents = getVal('agents.list') || [];
-  let html = `<div id="agent-list-container">`;
-  
-  agents.forEach((agent, i) => {
-    html += `<div class="card" id="agent-card-${i}">`;
-    html += `<div class="card-header">`;
-    html += `<h4>${icon('agents')} ${agent.id || `Agent ${i + 1}`}</h4>`;
-    html += `<div style="display:flex;gap:6px">`;
-    html += `<button class="btn btn-sm" onclick="duplicateAgent(${i})" data-tooltip="Duplicate agent">${icon('copy')}</button>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeAgent(${i})">${icon('close')} Remove</button>`;
-    html += `</div>`;
-    html += `</div>`;
-    html += `<div class="card-grid">`;
-    html += cardField('ID', 'text', agent.id || '', `updateAgent(${i},'id',this.value)`, 'Unique agent identifier', true);
-    html += cardField('Label', 'text', agent.label || '', `updateAgent(${i},'label',this.value)`, 'Display name');
-    html += cardField('Model', 'text', agent.model || '', `updateAgent(${i},'model',this.value)`, 'Model override (e.g. openai/gpt-4o)');
-    html += cardField('Image Model', 'text', agent.imageModel || '', `updateAgent(${i},'imageModel',this.value)`, 'Image analysis model override');
-    html += cardField('Max Tokens', 'number', agent.maxTokens || '', `updateAgent(${i},'maxTokens',parseInt(this.value))`, 'Max tokens override');
-    html += cardField('Temperature', 'number', agent.temperature !== undefined ? agent.temperature : '', `updateAgent(${i},'temperature',parseFloat(this.value))`, '0-2', false, 0.1);
-    html += cardField('System Prompt', 'textarea', agent.systemPrompt || '', `updateAgent(${i},'systemPrompt',this.value)`, 'Agent-specific system prompt', false, null, true);
-    html += cardField('Sandbox', 'text', agent.sandbox || '', `updateAgent(${i},'sandbox',this.value)`, 'Sandbox profile / path');
-    html += cardField('Workspace', 'text', agent.workspace || '', `updateAgent(${i},'workspace',this.value)`, 'Workspace directory');
-    
-    // Thinking mode
-    html += `<div class="field-group">`;
-    html += `<div class="field-label"><span class="field-icon">${icon('select')}</span> Thinking</div>`;
-    html += `<select onchange="updateAgent(${i},'thinking',this.value)">`;
-    for (const opt of ['','off','on','adaptive','stream']) {
-      const sel = agent.thinking === opt ? 'selected' : '';
-      html += `<option value="${opt}" ${sel}>${opt || '(inherit default)'}</option>`;
-    }
-    html += `</select></div>`;
-    
-    // Allowed channels
-    html += `<div class="field-group">`;
-    html += `<div class="field-label"><span class="field-icon">${icon('array')}</span> Allowed Channels</div>`;
-    html += renderInlineArray(`agent-${i}-channels`, agent.allowedChannels || [], (arr) => { updateAgent(i, 'allowedChannels', arr); });
-    html += `</div>`;
-    
-    html += `</div>`; // card-grid
-    html += `</div>`; // card
-  });
-  
-  html += `<button class="btn" onclick="addAgent()">${icon('plus')} Add Agent</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function cardField(label, type, value, onchange, hint, required, step, fullWidth) {
-  const fwClass = fullWidth ? 'full-width' : '';
-  const typeIconName = type === 'textarea' ? 'textarea' : type === 'number' ? 'number' : 'text';
-  let html = `<div class="field-group ${fwClass}">`;
-  html += `<div class="field-label"><span class="field-icon">${icon(typeIconName)}</span> ${label}${required ? ' <span class="required">*</span>' : ''}</div>`;
-  if (type === 'textarea') {
-    html += `<textarea rows="3" onchange="${onchange}">${escHtml(value)}</textarea>`;
-  } else if (type === 'number') {
-    html += `<input type="number" value="${value}" step="${step || 1}" onchange="${onchange}" />`;
-  } else {
-    html += `<input type="text" value="${escHtml(value)}" onchange="${onchange}" />`;
-  }
-  if (hint) html += `<div class="field-hint">${hint}</div>`;
-  html += `</div>`;
-  return html;
-}
-
-function renderInlineArray(id, arr, updateFn) {
-  // Store callback globally
-  window['__arrayCallback_' + id] = updateFn;
-  let html = `<div class="array-field" id="inline-array-${id}">`;
-  arr.forEach((item, i) => {
-    html += `<div class="array-item"><input type="text" value="${escHtml(String(item))}" onchange="updateInlineArray('${id}', ${i}, this.value)" /><button class="btn-remove" onclick="removeInlineArrayItem('${id}', ${i})">${icon('close')}</button></div>`;
-  });
-  html += `<button class="btn btn-sm array-add" onclick="addInlineArrayItem('${id}')">${icon('plus')} Add</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function addAgent() {
-  const agents = getVal('agents.list') || [];
-  agents.push({ id: `agent-${agents.length + 1}`, label: '', model: '' });
-  setVal('agents.list', agents);
-  renderContent();
-}
-
-function removeAgent(i) {
-  const agents = getVal('agents.list') || [];
-  agents.splice(i, 1);
-  setVal('agents.list', agents);
-  renderContent();
-}
-
-function duplicateAgent(i) {
-  const agents = getVal('agents.list') || [];
-  const copy = JSON.parse(JSON.stringify(agents[i]));
-  copy.id = copy.id + '-copy';
-  agents.splice(i + 1, 0, copy);
-  setVal('agents.list', agents);
-  renderContent();
-}
-
-function updateAgent(i, key, val) {
-  const agents = getVal('agents.list') || [];
-  if (agents[i]) {
-    if (val === '' || val === undefined || val === null || (typeof val === 'number' && isNaN(val))) {
-      delete agents[i][key];
-    } else {
-      agents[i][key] = val;
-    }
-    setVal('agents.list', agents);
-  }
-}
-
-// ============================================================
-// BINDING LIST EDITOR
-// ============================================================
-
-function renderBindingList() {
-  const bindings = getVal('bindings') || [];
-  let html = `<div id="binding-list-container">`;
-  
-  bindings.forEach((b, i) => {
-    html += `<div class="card">`;
-    html += `<div class="card-header">`;
-    html += `<h4>${icon('bindings')} Rule ${i + 1}${b.label ? ' — ' + escHtml(b.label) : ''}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeBinding(${i})">${icon('close')} Remove</button>`;
-    html += `</div>`;
-    html += `<div class="card-grid">`;
-    html += cardField('Label', 'text', b.label || '', `updateBinding(${i},'label',this.value)`, 'Descriptive label for this rule');
-    html += cardField('Agent', 'text', b.agent || '', `updateBinding(${i},'agent',this.value)`, 'Target agent ID', true);
-    html += cardField('Channel', 'text', b.channel || '', `updateBinding(${i},'channel',this.value)`, 'Channel type (telegram, whatsapp, discord...)');
-    html += cardField('Chat ID', 'text', b.chatId || '', `updateBinding(${i},'chatId',this.value)`, 'Specific chat/group ID');
-    html += cardField('Pattern', 'text', b.pattern || '', `updateBinding(${i},'pattern',this.value)`, 'Regex pattern to match messages');
-    html += cardField('Priority', 'number', b.priority !== undefined ? b.priority : '', `updateBinding(${i},'priority',parseInt(this.value))`, 'Rule priority (higher = checked first)');
-    html += `</div></div>`;
-  });
-  
-  html += `<button class="btn" onclick="addBinding()">${icon('plus')} Add Binding Rule</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function addBinding() {
-  const bindings = getVal('bindings') || [];
-  bindings.push({ agent: '', channel: '', label: '' });
-  setVal('bindings', bindings);
-  renderContent();
-}
-
-function removeBinding(i) {
-  const bindings = getVal('bindings') || [];
-  bindings.splice(i, 1);
-  setVal('bindings', bindings);
-  renderContent();
-}
-
-function updateBinding(i, key, val) {
-  const bindings = getVal('bindings') || [];
-  if (bindings[i]) {
-    if (val === '' || val === undefined) delete bindings[i][key];
-    else bindings[i][key] = val;
-    setVal('bindings', bindings);
-  }
-}
-
-// ============================================================
-// PLUGIN LIST EDITOR
-// ============================================================
-
-function renderPluginList() {
-  const plugins = getVal('plugins.entries') || [];
-  let html = `<div id="plugin-list-container">`;
-  
-  plugins.forEach((p, i) => {
-    html += `<div class="card">`;
-    html += `<div class="card-header">`;
-    html += `<h4>${icon('plugins')} ${p.name || `Plugin ${i + 1}`}</h4>`;
-    html += `<div style="display:flex;gap:6px;align-items:center">`;
-    const checked = p.enabled !== false ? 'checked' : '';
-    html += `<label class="toggle"><input type="checkbox" ${checked} onchange="updatePlugin(${i},'enabled',this.checked)"><span class="slider"></span></label>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removePlugin(${i})">${icon('close')}</button>`;
-    html += `</div></div>`;
-    html += `<div class="card-grid">`;
-    html += cardField('Name', 'text', p.name || '', `updatePlugin(${i},'name',this.value)`, 'Plugin identifier', true);
-    html += cardField('Package', 'text', p.package || '', `updatePlugin(${i},'package',this.value)`, 'npm package or local path');
-    html += `<div class="field-group full-width">`;
-    html += `<div class="field-label"><span class="field-icon">${icon('textarea')}</span> Config (JSON)</div>`;
-    html += `<textarea rows="3" onchange="updatePluginConfig(${i}, this.value)">${escHtml(JSON.stringify(p.config || {}, null, 2))}</textarea>`;
-    html += `<div class="field-hint">Plugin-specific configuration as JSON object.</div>`;
-    html += `</div>`;
-    html += `</div></div>`;
-  });
-  
-  html += `<button class="btn" onclick="addPlugin()">${icon('plus')} Add Plugin</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function addPlugin() {
-  const plugins = getVal('plugins.entries') || [];
-  plugins.push({ name: '', package: '', enabled: true, config: {} });
-  setVal('plugins.entries', plugins);
-  renderContent();
-}
-
-function removePlugin(i) {
-  const plugins = getVal('plugins.entries') || [];
-  plugins.splice(i, 1);
-  setVal('plugins.entries', plugins);
-  renderContent();
-}
-
-function updatePlugin(i, key, val) {
-  const plugins = getVal('plugins.entries') || [];
-  if (plugins[i]) {
-    plugins[i][key] = val;
-    setVal('plugins.entries', plugins);
-    // Only re-render for name changes (header display)
-    if (key === 'name') renderContent();
-  }
-}
-
-function updatePluginConfig(i, jsonStr) {
-  const plugins = getVal('plugins.entries') || [];
-  try {
-    plugins[i].config = JSON.parse(jsonStr);
-    setVal('plugins.entries', plugins);
-  } catch (e) {
-    // Invalid JSON - ignore until valid
-  }
-}
-
-// ============================================================
-// COMMAND LIST EDITOR
-// ============================================================
-
-function renderCommandList() {
-  const commands = getVal('commands.custom') || [];
-  let html = `<div>`;
-  
-  commands.forEach((cmd, i) => {
-    html += `<div class="card">`;
-    html += `<div class="card-header">`;
-    html += `<h4>${icon('commands')} /${cmd.name || '...'}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeCommand(${i})">${icon('close')}</button>`;
-    html += `</div>`;
-    html += `<div class="card-grid">`;
-    html += cardField('Name', 'text', cmd.name || '', `updateCommand(${i},'name',this.value)`, 'Command name (without prefix)', true);
-    html += cardField('Description', 'text', cmd.description || '', `updateCommand(${i},'description',this.value)`, 'Help text for the command');
-    html += cardField('Action', 'textarea', cmd.action || '', `updateCommand(${i},'action',this.value)`, 'Action to execute (script, agent, etc.)', false, null, true);
-    html += `</div></div>`;
-  });
-  
-  html += `<button class="btn" onclick="addCommand()">${icon('plus')} Add Command</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function addCommand() {
-  const commands = getVal('commands.custom') || [];
-  commands.push({ name: '', description: '', action: '' });
-  setVal('commands.custom', commands);
-  renderContent();
-}
-
-function removeCommand(i) {
-  const commands = getVal('commands.custom') || [];
-  commands.splice(i, 1);
-  setVal('commands.custom', commands);
-  renderContent();
-}
-
-function updateCommand(i, key, val) {
-  const commands = getVal('commands.custom') || [];
-  if (commands[i]) {
-    commands[i][key] = val;
-    setVal('commands.custom', commands);
-    if (key === 'name') renderContent();
-  }
-}
-
-// ============================================================
-// MODEL PROVIDERS EDITOR
-// ============================================================
-
-function renderModelProviders() {
-  const providers = getVal('models.providers') || [];
-  let html = `<div>`;
-  
-  providers.forEach((p, i) => {
-    html += `<div class="card">`;
-    html += `<div class="card-header">`;
-    html += `<h4>${icon('models')} ${p.name || p.type || `Provider ${i + 1}`}</h4>`;
-    html += `<button class="btn btn-sm btn-danger" onclick="removeProvider(${i})">${icon('close')}</button>`;
-    html += `</div>`;
-    html += `<div class="card-grid">`;
-    html += cardField('Name', 'text', p.name || '', `updateProvider(${i},'name',this.value)`, 'Provider identifier', true);
-    html += `<div class="field-group"><div class="field-label"><span class="field-icon">${icon('select')}</span> Type</div><select onchange="updateProvider(${i},'type',this.value)">`;
-    for (const t of ['openai','anthropic','openrouter','azure','google','ollama','litellm','custom']) {
-      const sel = p.type === t ? 'selected' : '';
-      html += `<option value="${t}" ${sel}>${t}</option>`;
-    }
-    html += `</select></div>`;
-    html += cardField('Base URL', 'text', p.baseUrl || '', `updateProvider(${i},'baseUrl',this.value)`, 'API base URL');
-    html += `<div class="field-group"><div class="field-label"><span class="field-icon">${icon('secretref')}</span> API Key <span class="badge badge-secret">${icon('lock')} SecretRef</span></div>`;
-    html += renderProviderSecretRef(i, p.apiKey || {});
-    html += `</div>`;
-    html += cardField('Model Prefix', 'text', p.prefix || '', `updateProvider(${i},'prefix',this.value)`, 'Prefix for model routing (e.g. "openai/")');
-    // Fallbacks as array
-    html += `<div class="field-group full-width"><div class="field-label"><span class="field-icon">${icon('array')}</span> Fallback Models</div>`;
-    html += renderInlineArray(`provider-${i}-fallbacks`, p.fallbacks || [], (arr) => { updateProvider(i, 'fallbacks', arr); });
-    html += `<div class="field-hint">Model IDs to try if primary model fails.</div></div>`;
-    html += `</div></div>`;
-  });
-  
-  html += `<button class="btn" onclick="addProvider()">${icon('plus')} Add Provider</button>`;
-  html += `</div>`;
-  return html;
-}
-
-function renderProviderSecretRef(i, val) {
-  if (typeof val === 'string') {
-    return `<input type="text" value="${escHtml(val)}" onchange="updateProvider(${i},'apiKey',this.value)" placeholder="API key or SecretRef" />`;
-  }
-  let html = `<div class="secretref-fields">`;
-  html += `<input type="text" value="${escHtml(val.source || '')}" placeholder="source" onchange="updateProviderSecretRef(${i},'source',this.value)" />`;
-  html += `<input type="text" value="${escHtml(val.provider || '')}" placeholder="provider" onchange="updateProviderSecretRef(${i},'provider',this.value)" />`;
-  html += `<input type="text" value="${escHtml(val.id || '')}" placeholder="id" onchange="updateProviderSecretRef(${i},'id',this.value)" />`;
-  html += `</div>`;
-  return html;
-}
-
-function addProvider() {
-  const providers = getVal('models.providers') || [];
-  providers.push({ name: '', type: 'openai', baseUrl: '', apiKey: { source: 'env', provider: '', id: '' } });
-  setVal('models.providers', providers);
-  renderContent();
-}
-
-function removeProvider(i) {
-  const providers = getVal('models.providers') || [];
-  providers.splice(i, 1);
-  setVal('models.providers', providers);
-  renderContent();
-}
-
-function updateProvider(i, key, val) {
-  const providers = getVal('models.providers') || [];
-  if (providers[i]) {
-    if (val === '' && key !== 'name' && key !== 'type') delete providers[i][key];
-    else providers[i][key] = val;
-    setVal('models.providers', providers);
-    if (key === 'name' || key === 'type') renderContent();
-  }
-}
-
-function updateProviderSecretRef(i, field, val) {
-  const providers = getVal('models.providers') || [];
-  if (providers[i]) {
-    if (!providers[i].apiKey || typeof providers[i].apiKey === 'string') {
-      providers[i].apiKey = {};
-    }
-    providers[i].apiKey[field] = val;
-    setVal('models.providers', providers);
-  }
-}
-
-// ============================================================
-// ARRAY FIELD HELPERS
-// ============================================================
-
-function addArrayItem(key) {
-  const arr = getVal(key) || [];
-  arr.push('');
-  setVal(key, arr);
-  renderContent();
-}
-
-function removeArrayItem(key, i) {
-  const arr = getVal(key) || [];
-  arr.splice(i, 1);
-  setVal(key, arr);
-  renderContent();
-}
-
-function updateArrayItem(key, i, val) {
-  const arr = getVal(key) || [];
-  arr[i] = val;
-  setVal(key, arr);
-}
-
-// Inline array helpers (for arrays inside cards)
-function getInlineArrayData(id) {
-  // Parse from DOM
-  const container = document.getElementById('inline-array-' + id);
-  if (!container) return [];
-  const inputs = container.querySelectorAll('.array-item input');
-  return Array.from(inputs).map(inp => inp.value);
-}
-
-function addInlineArrayItem(id) {
-  const arr = getInlineArrayData(id);
-  arr.push('');
-  if (window['__arrayCallback_' + id]) {
-    window['__arrayCallback_' + id](arr);
-  }
-  renderContent();
-}
-
-function removeInlineArrayItem(id, i) {
-  const arr = getInlineArrayData(id);
-  arr.splice(i, 1);
-  if (window['__arrayCallback_' + id]) {
-    window['__arrayCallback_' + id](arr);
-  }
-  renderContent();
-}
-
-function updateInlineArray(id, i, val) {
-  const arr = getInlineArrayData(id);
-  arr[i] = val;
-  if (window['__arrayCallback_' + id]) {
-    window['__arrayCallback_' + id](arr);
-  }
-}
-
-// ============================================================
-// SECRETREF HELPERS
-// ============================================================
-
-function updateSecretRef(key, field, val) {
-  let ref = getVal(key) || {};
-  if (typeof ref === 'string') ref = {};
-  ref[field] = val;
-  setVal(key, ref);
-}
-
-function convertToSecretRef(key) {
-  setVal(key, { source: 'env', provider: '', id: '' });
-  renderContent();
-}
-
-function convertToPlainValue(key) {
-  setVal(key, '');
-  renderContent();
-}
-
-// ============================================================
-// SECURITY WARNINGS
-// ============================================================
-
-function getSecurityWarning(key, val) {
-  if (key === 'gateway.bind' && val === '0.0.0.0') return 'Binding to all interfaces exposes the gateway to all networks.';
-  if (key === 'auth.enabled' && val === false) return 'Authentication is disabled! The gateway is open to anyone.';
-  if (key === 'auth.provider' && val === 'none') return 'No authentication provider — gateway is unprotected.';
-  if (key === 'tools.security' && val === 'full') return 'Full exec access allows arbitrary command execution.';
-  if (key === 'tools.sandbox.enabled' && val === false) return 'Sandbox disabled — tools run directly on the host.';
-  if (key === 'tools.sandbox.networkMode' && val === 'host') return 'Host network mode gives container full network access.';
-  if (key === 'gateway.rateLimit.enabled' && val === false) return 'No rate limiting — vulnerable to abuse.';
-  if (key === 'acp.auth.required' && val === false) return 'ACP without auth allows any agent to connect.';
-  if (key.includes('allowedOrigins') && Array.isArray(val) && val.includes('*')) return 'Wildcard CORS origin allows requests from any domain.';
-  if (key.includes('allowedChatIds') && Array.isArray(val) && val.length === 0) return 'No chat ID restriction — all chats are allowed.';
-  if (key.includes('allowedGuildIds') && Array.isArray(val) && val.length === 0) return 'No guild restriction — all servers are allowed.';
-  if (key.includes('trustedProxies') && Array.isArray(val) && val.length === 0) return 'No trusted proxies configured.';
-  return null;
-}
-
-// ============================================================
-// IMPORT / EXPORT
-// ============================================================
-
-function importJSON() {
-  document.getElementById('fileInput').click();
-}
-
-function handleFileImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const json = JSON.parse(e.target.result);
-      loadFromJSON(json);
-      showToast('Configuration imported successfully', 'success');
-    } catch (err) {
-      showToast('Failed to parse JSON: ' + err.message, 'error');
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function loadFromJSON(json) {
-  // Reset config
-  buildDefaults();
-  initConfig();
-  modifiedKeys.clear();
-  
-  const flat = nestedToFlat(json);
-  const extra = {};
-  
-  for (const [key, val] of Object.entries(flat)) {
-    const fieldDef = findFieldDef(key);
-    if (fieldDef) {
-      deepSet(config, key, val);
-      if (JSON.stringify(val) !== JSON.stringify(fieldDef.default)) {
-        modifiedKeys.add(key);
-      }
-    } else {
-      // Unknown key — store as extra
-      extra[key] = val;
     }
   }
-  
-  if (Object.keys(extra).length > 0) {
-    config._extra = extra;
-  }
-  
   renderSidebar();
   renderContent();
   updatePreview();
-  updateStatusBar();
 }
 
-function exportJSON() {
-  const json = generateJSON();
-  const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'openclaw.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Configuration exported as openclaw.json', 'success');
+// ==================== RENDER CONTENT ====================
+function renderContent() {
+  const el = document.getElementById('content');
+  let section = SECTIONS.find(s => s.id === activeSection);
+  let sub = null;
+  if (!section) {
+    for (const s of SECTIONS) {
+      if (s.subs) {
+        sub = s.subs.find(ss => ss.id === activeSection);
+        if (sub) { section = s; break; }
+      }
+    }
+  }
+  if (!section && !sub) { el.innerHTML = '<p style="color:var(--muted)">Select a section</p>'; return; }
+  const target = sub || section;
+  let html = '<div class="sec-title">' + section.icon + ' ' + (sub ? section.label + ' \u2192 ' + sub.label : section.label) + '</div>';
+  html += '<div class="sec-desc">' + getDesc(target.id) + '</div>';
+  if (target.custom === 'agentList') { html += renderAgentList(); }
+  else if (target.custom === 'bindingsList') { html += renderBindingsList(); }
+  else if (target.groups) {
+    for (const g of target.groups) {
+      html += '<div class="field-group"><div class="field-group-title">' + g.title + '</div>';
+      for (const f of g.fields) html += renderField(f);
+      html += '</div>';
+    }
+  } else if (target.fields) {
+    for (const f of target.fields) html += renderField(f);
+  }
+  el.innerHTML = html;
 }
 
-function copyToClipboard() {
-  const json = generateJSON();
-  const text = JSON.stringify(json, null, 2);
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('JSON copied to clipboard', 'success');
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('JSON copied to clipboard', 'success');
+function getDesc(id) {
+  const d = {
+    'browser':'Configure the built-in browser.',
+    'secrets':'Secret providers and defaults.',
+    'auth':'Authentication profiles and ordering.',
+    'models':'Model providers and configuration.',
+    'agents.defaults':'Default settings for all agents.',
+    'agents.list':'List of configured agents.',
+    'tools':'Tool permissions and configuration.',
+    'bindings':'Bind agents to specific channels/peers.',
+    'messages':'Message processing and TTS.',
+    'commands':'Command availability and permissions.',
+    'channels.whatsapp':'WhatsApp channel configuration.',
+    'channels.telegram':'Telegram channel configuration.',
+    'channels.discord':'Discord channel configuration.',
+    'gateway':'Gateway server configuration.',
+    'plugins':'Plugin management.',
+    'acp':'Agent Communication Protocol settings.',
+    'session':'Session management.',
+  };
+  return d[id] || '';
+}
+
+// ==================== FIELD RENDERERS ====================
+function renderField(f) {
+  const val = deepGet(config, f.k);
+  let html = '<div class="field" data-key="' + f.k + '">';
+  switch (f.type) {
+    case 'bool':
+      html += '<div class="field-row"><label class="toggle"><input type="checkbox" data-path="' + f.k + '" ' + (val ? 'checked' : '') + ' onchange="setVal(\'' + f.k + '\', this.checked)"><span class="slider"></span></label><label style="margin:0;cursor:pointer" onclick="this.previousElementSibling.querySelector(\'input\').click()">' + f.label + '</label></div>';
+      break;
+    case 'select':
+      html += '<label>' + f.label + '</label><select data-path="' + f.k + '" onchange="setVal(\'' + f.k + '\', this.value || undefined)"><option value="">(not set)</option>';
+      for (const o of f.opts) html += '<option value="' + o + '"' + (String(val) === o ? ' selected' : '') + '>' + o + '</option>';
+      html += '</select>';
+      break;
+    case 'number':
+      html += '<label>' + f.label + '</label><input type="number" data-path="' + f.k + '" value="' + (val !== undefined ? val : '') + '" onchange="setVal(\'' + f.k + '\', this.value ? Number(this.value) : undefined)">';
+      break;
+    case 'string':
+      html += '<label>' + f.label + '</label><input type="text" data-path="' + f.k + '" value="' + escHtml(val !== undefined ? String(val) : '') + '" onchange="setVal(\'' + f.k + '\', this.value || undefined)">';
+      break;
+    case 'array':
+      html += '<label>' + f.label + '</label>' + renderArrayEditor(f.k, val);
+      break;
+    case 'kv':
+      html += '<label>' + f.label + '</label>' + renderKvEditor(f.k, val);
+      break;
+    case 'kv-object':
+      html += '<label>' + f.label + '</label>' + renderKvObjectEditor(f.k, val, f.valType);
+      break;
+    case 'secretRef':
+      html += '<label>' + f.label + '</label>' + renderSecretRef(f.k, val);
+      break;
+  }
+  if (f.desc) html += '<div class="desc">' + f.desc + '</div>';
+  html += '</div>';
+  return html;
+}
+
+function renderArrayEditor(path, val) {
+  const arr = Array.isArray(val) ? val : [];
+  let html = '<div class="arr-list" data-arr="' + path + '">';
+  arr.forEach(function(item, i) {
+    html += '<div class="arr-item"><input type="text" value="' + escHtml(item) + '" data-arr-path="' + path + '" data-idx="' + i + '" onchange="updateArr(\'' + path + '\', ' + i + ', this.value)"><button class="rm" onclick="removeArr(\'' + path + '\', ' + i + ')">×</button></div>';
   });
+  html += '</div><button class="arr-add" onclick="addArr(\'' + path + '\')">+ Add item</button>';
+  return html;
 }
 
-// ============================================================
-// PREVIEW PANEL
-// ============================================================
+function renderKvEditor(path, val) {
+  const obj = (val && typeof val === 'object' && !Array.isArray(val)) ? val : {};
+  const entries = Object.entries(obj);
+  let html = '<div class="arr-list" data-kv="' + path + '">';
+  entries.forEach(function(e) {
+    html += '<div class="kv-row"><input type="text" class="k" value="' + escHtml(e[0]) + '" placeholder="key" onchange="renameKv(\'' + path + '\',\'' + escHtml(e[0]) + '\',this.value)"><input type="text" value="' + escHtml(e[1]) + '" placeholder="value" onchange="updateKvVal(\'' + path + '\',\'' + escHtml(e[0]) + '\',this.value)"><button class="rm" onclick="removeKv(\'' + path + '\',\'' + escHtml(e[0]) + '\')">×</button></div>';
+  });
+  html += '</div><button class="arr-add" onclick="addKv(\'' + path + '\')">+ Add entry</button>';
+  return html;
+}
 
+function renderKvObjectEditor(path, val, valType) {
+  const obj = (val && typeof val === 'object' && !Array.isArray(val)) ? val : {};
+  const entries = Object.entries(obj);
+  let html = '<div class="arr-list" data-kvo="' + path + '">';
+  entries.forEach(function(e) {
+    var vStr = (typeof e[1] === 'object') ? JSON.stringify(e[1], null, 2) : String(e[1]);
+    html += '<div class="sub-card"><div class="sub-card-title"><span>' + escHtml(e[0]) + '</span><button class="btn btn-sm btn-d" onclick="removeKvo(\'' + path + '\',\'' + escHtml(e[0]) + '\')">× Remove</button></div>';
+    if (valType === 'json') {
+      html += '<textarea data-kvo-path="' + path + '" data-kvo-key="' + escHtml(e[0]) + '" rows="4" onchange="updateKvo(\'' + path + '\',\'' + escHtml(e[0]) + '\',this.value,\'json\')">' + escHtml(vStr) + '</textarea>';
+    } else {
+      html += '<input type="text" data-kvo-path="' + path + '" data-kvo-key="' + escHtml(e[0]) + '" value="' + escHtml(vStr) + '" onchange="updateKvo(\'' + path + '\',\'' + escHtml(e[0]) + '\',this.value,\'string\')">';
+    }
+    html += '</div>';
+  });
+  html += '</div><button class="arr-add" onclick="addKvo(\'' + path + '\',\'' + (valType||'json') + '\')">+ Add entry</button>';
+  return html;
+}
+
+function renderSecretRef(path, val) {
+  var isStr = typeof val === 'string';
+  var source = isStr ? 'inline' : (val && val.source) || 'inline';
+  var provider = (!isStr && val && val.provider) || '';
+  var id = (!isStr && val && val.id) || '';
+  var inline = isStr ? val : '';
+  var html = '<div class="secret-ref">';
+  html += '<div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> SecretRef</div>';
+  html += '<div class="sr-fields">';
+  html += '<div><label>Source</label><select data-sr-path="' + path + '" data-sr-field="source" onchange="updateSecretRef(\'' + path + '\')"><option value="inline"' + (source==='inline'?' selected':'') + '>inline</option><option value="env"' + (source==='env'?' selected':'') + '>env</option><option value="file"' + (source==='file'?' selected':'') + '>file</option><option value="vault"' + (source==='vault'?' selected':'') + '>vault</option></select></div>';
+  html += '<div><label>Provider</label><input type="text" data-sr-path="' + path + '" data-sr-field="provider" value="' + escHtml(provider) + '" onchange="updateSecretRef(\'' + path + '\')"></div>';
+  html += '<div><label>ID / Value</label><input type="text" data-sr-path="' + path + '" data-sr-field="id" value="' + escHtml(id || inline) + '" onchange="updateSecretRef(\'' + path + '\')"></div>';
+  html += '</div></div>';
+  return html;
+}
+
+// ==================== AGENT LIST ====================
+function renderAgentList() {
+  var list = deepGet(config, 'agents.list') || [];
+  var html = '';
+  list.forEach(function(agent, i) {
+    html += '<div class="sub-card">';
+    html += '<div class="sub-card-title"><span>Agent: ' + escHtml(agent.id || '(unnamed)') + '</span><button class="btn btn-sm btn-d" onclick="removeAgent(' + i + ')">× Remove</button></div>';
+    html += '<div class="field"><label>ID</label><input type="text" value="' + escHtml(agent.id||'') + '" onchange="updateAgent(' + i + ',\'id\',this.value)"></div>';
+    html += '<div class="field"><div class="field-row"><label class="toggle"><input type="checkbox" ' + (agent.default?'checked':'') + ' onchange="updateAgent(' + i + ',\'default\',this.checked)"><span class="slider"></span></label><label>Default Agent</label></div></div>';
+    html += '<div class="field"><label>Workspace</label><input type="text" value="' + escHtml(agent.workspace||'') + '" onchange="updateAgent(' + i + ',\'workspace\',this.value||undefined)"></div>';
+    html += '<div class="field"><label>Model</label><input type="text" value="' + escHtml(agent.model||'') + '" onchange="updateAgent(' + i + ',\'model\',this.value||undefined)"></div>';
+    html += '<div class="field"><label>Identity Name</label><input type="text" value="' + escHtml((agent.identity&&agent.identity.name)||'') + '" onchange="updateAgentNested(' + i + ',\'identity.name\',this.value||undefined)"></div>';
+    html += '<div class="field"><label>Identity Emoji</label><input type="text" value="' + escHtml((agent.identity&&agent.identity.emoji)||'') + '" onchange="updateAgentNested(' + i + ',\'identity.emoji\',this.value||undefined)"></div>';
+    var toolsDeny = (agent.tools && agent.tools.deny) || [];
+    var toolsAllow = (agent.tools && agent.tools.allow) || [];
+    var wsOnly = agent.tools && agent.tools.fs && agent.tools.fs.workspaceOnly;
+    html += '<div class="field-group-title" style="margin-top:10px">Tools</div>';
+    html += '<div class="field"><label>Deny</label>' + renderInlineArray('agents.list.' + i + '.tools.deny', toolsDeny) + '</div>';
+    html += '<div class="field"><label>Allow</label>' + renderInlineArray('agents.list.' + i + '.tools.allow', toolsAllow) + '</div>';
+    html += '<div class="field"><div class="field-row"><label class="toggle"><input type="checkbox" ' + (wsOnly?'checked':'') + ' onchange="updateAgentNested(' + i + ',\'tools.fs.workspaceOnly\',this.checked)"><span class="slider"></span></label><label>Workspace Only FS</label></div></div>';
+    var subAllow = (agent.subagents && agent.subagents.allowAgents) || [];
+    var subModel = (agent.subagents && agent.subagents.model) || '';
+    html += '<div class="field-group-title" style="margin-top:10px">Subagents</div>';
+    html += '<div class="field"><label>Allow Agents</label>' + renderInlineArray('agents.list.' + i + '.subagents.allowAgents', subAllow) + '</div>';
+    html += '<div class="field"><label>Subagent Model</label><input type="text" value="' + escHtml(subModel) + '" onchange="updateAgentNested(' + i + ',\'subagents.model\',this.value||undefined)"></div>';
+    html += '</div>';
+  });
+  html += '<button class="arr-add" onclick="addAgent()" style="margin-top:10px">+ Add Agent</button>';
+  return html;
+}
+
+function renderInlineArray(path, arr) {
+  var html = '<div class="arr-list">';
+  arr.forEach(function(item, i) {
+    html += '<div class="arr-item"><input type="text" value="' + escHtml(item) + '" onchange="updateInlineArr(\'' + path + '\',' + i + ',this.value)"><button class="rm" onclick="removeInlineArr(\'' + path + '\',' + i + ')">×</button></div>';
+  });
+  html += '</div><button class="arr-add" onclick="addInlineArr(\'' + path + '\')">+ Add</button>';
+  return html;
+}
+
+// ==================== BINDINGS ====================
+function renderBindingsList() {
+  var list = deepGet(config, 'bindings') || [];
+  var html = '';
+  list.forEach(function(b, i) {
+    html += '<div class="sub-card">';
+    html += '<div class="sub-card-title"><span>Binding #' + (i+1) + '</span><button class="btn btn-sm btn-d" onclick="removeBinding(' + i + ')">× Remove</button></div>';
+    html += '<div class="field"><label>Agent ID</label><input type="text" value="' + escHtml(b.agentId||'') + '" onchange="updateBinding(' + i + ',\'agentId\',this.value)"></div>';
+    html += '<div class="field"><label>Match Channel</label><input type="text" value="' + escHtml((b.match&&b.match.channel)||'') + '" onchange="updateBindingMatch(' + i + ',\'channel\',this.value)"></div>';
+    html += '<div class="field"><label>Match Account ID</label><input type="text" value="' + escHtml((b.match&&b.match.accountId)||'') + '" onchange="updateBindingMatch(' + i + ',\'accountId\',this.value)"></div>';
+    html += '<div class="field"><label>Match Peer ID</label><input type="text" value="' + escHtml((b.match&&b.match.peer&&b.match.peer.id)||'') + '" onchange="updateBindingPeer(' + i + ',this.value)"></div>';
+    html += '</div>';
+  });
+  html += '<button class="arr-add" onclick="addBinding()" style="margin-top:10px">+ Add Binding</button>';
+  return html;
+}
+
+// ==================== EVENT HANDLERS ====================
+function setVal(path, val) { deepSet(config, path, val); updatePreview(); }
+
+// Array ops
+function updateArr(path, idx, val) {
+  var arr = deepGet(config, path) || []; arr = arr.slice(); arr[idx] = val;
+  deepSet(config, path, arr); updatePreview();
+}
+function removeArr(path, idx) {
+  var arr = deepGet(config, path) || []; arr = arr.slice(); arr.splice(idx, 1);
+  deepSet(config, path, arr.length ? arr : undefined); renderContent(); updatePreview();
+}
+function addArr(path) {
+  var arr = deepGet(config, path) || []; arr = arr.concat(['']);
+  deepSet(config, path, arr); renderContent(); updatePreview();
+}
+function updateInlineArr(path, idx, val) {
+  var arr = deepGet(config, path) || []; arr = arr.slice(); arr[idx] = val;
+  deepSet(config, path, arr); updatePreview();
+}
+function removeInlineArr(path, idx) {
+  var arr = deepGet(config, path) || []; arr = arr.slice(); arr.splice(idx, 1);
+  deepSet(config, path, arr.length ? arr : undefined); renderContent(); updatePreview();
+}
+function addInlineArr(path) {
+  var arr = deepGet(config, path) || []; arr = arr.concat(['']);
+  deepSet(config, path, arr); renderContent(); updatePreview();
+}
+
+// KV ops
+function updateKvVal(path, key, val) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj); obj[key] = val;
+  deepSet(config, path, obj); updatePreview();
+}
+function renameKv(path, oldKey, newKey) {
+  if (oldKey === newKey) return;
+  var obj = deepGet(config, path) || {}; var newObj = {};
+  for (var k in obj) { newObj[k === oldKey ? newKey : k] = obj[k]; }
+  deepSet(config, path, newObj); renderContent(); updatePreview();
+}
+function removeKv(path, key) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj); delete obj[key];
+  deepSet(config, path, Object.keys(obj).length ? obj : undefined); renderContent(); updatePreview();
+}
+function addKv(path) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj);
+  var k = prompt('Key name:'); if (!k) return; obj[k] = '';
+  deepSet(config, path, obj); renderContent(); updatePreview();
+}
+
+// KV-Object ops
+function updateKvo(path, key, val, type) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj);
+  if (type === 'json') { try { obj[key] = JSON.parse(val); } catch(e) { obj[key] = val; } }
+  else { obj[key] = val; }
+  deepSet(config, path, obj); updatePreview();
+}
+function removeKvo(path, key) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj); delete obj[key];
+  deepSet(config, path, Object.keys(obj).length ? obj : undefined); renderContent(); updatePreview();
+}
+function addKvo(path, valType) {
+  var obj = deepGet(config, path) || {}; obj = Object.assign({}, obj);
+  var k = prompt('Key name:'); if (!k) return; obj[k] = valType === 'json' ? {} : '';
+  deepSet(config, path, obj); renderContent(); updatePreview();
+}
+
+// SecretRef
+function updateSecretRef(path) {
+  var srcEl = document.querySelector('[data-sr-path="' + path + '"][data-sr-field="source"]');
+  var provEl = document.querySelector('[data-sr-path="' + path + '"][data-sr-field="provider"]');
+  var idEl = document.querySelector('[data-sr-path="' + path + '"][data-sr-field="id"]');
+  var source = srcEl ? srcEl.value : 'inline';
+  var provider = provEl ? provEl.value : '';
+  var id = idEl ? idEl.value : '';
+  if (source === 'inline') { deepSet(config, path, id || undefined); }
+  else {
+    var ref = { source: source };
+    if (provider) ref.provider = provider;
+    if (id) ref.id = id;
+    deepSet(config, path, ref);
+  }
+  updatePreview();
+}
+
+// Agent list ops
+function updateAgent(idx, field, val) {
+  var list = deepGet(config, 'agents.list') || [];
+  if (list[idx]) { if (val === undefined || val === '') delete list[idx][field]; else list[idx][field] = val; }
+  deepSet(config, 'agents.list', list); updatePreview();
+}
+function updateAgentNested(idx, nestedPath, val) {
+  var list = deepGet(config, 'agents.list') || [];
+  if (list[idx]) {
+    var keys = nestedPath.split('.'); var cur = list[idx];
+    for (var i = 0; i < keys.length - 1; i++) {
+      if (!cur[keys[i]] || typeof cur[keys[i]] !== 'object') cur[keys[i]] = {};
+      cur = cur[keys[i]];
+    }
+    if (val === undefined || val === '') delete cur[keys[keys.length-1]]; else cur[keys[keys.length-1]] = val;
+  }
+  deepSet(config, 'agents.list', list); updatePreview();
+}
+function addAgent() {
+  var list = deepGet(config, 'agents.list') || []; list.push({ id: 'new-agent' });
+  deepSet(config, 'agents.list', list); renderContent(); updatePreview();
+}
+function removeAgent(idx) {
+  var list = deepGet(config, 'agents.list') || []; list.splice(idx, 1);
+  deepSet(config, 'agents.list', list); renderContent(); updatePreview();
+}
+
+// Binding ops
+function updateBinding(idx, field, val) {
+  var list = deepGet(config, 'bindings') || [];
+  if (list[idx]) list[idx][field] = val || undefined;
+  deepSet(config, 'bindings', list); updatePreview();
+}
+function updateBindingMatch(idx, field, val) {
+  var list = deepGet(config, 'bindings') || [];
+  if (list[idx]) { if (!list[idx].match) list[idx].match = {}; if (val) list[idx].match[field] = val; else delete list[idx].match[field]; }
+  deepSet(config, 'bindings', list); updatePreview();
+}
+function updateBindingPeer(idx, val) {
+  var list = deepGet(config, 'bindings') || [];
+  if (list[idx]) { if (!list[idx].match) list[idx].match = {}; if (val) { if (!list[idx].match.peer) list[idx].match.peer = {}; list[idx].match.peer.id = val; } else { delete list[idx].match.peer; } }
+  deepSet(config, 'bindings', list); updatePreview();
+}
+function addBinding() {
+  var list = deepGet(config, 'bindings') || []; list.push({ agentId: '', match: {} });
+  deepSet(config, 'bindings', list); renderContent(); updatePreview();
+}
+function removeBinding(idx) {
+  var list = deepGet(config, 'bindings') || []; list.splice(idx, 1);
+  deepSet(config, 'bindings', list); renderContent(); updatePreview();
+}
+
+// ==================== IMPORT / EXPORT ====================
+function doImport() {
+  var fi = document.getElementById('fileInput'); fi.value = '';
+  fi.onchange = function() {
+    var file = fi.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try { config = JSON.parse(e.target.result); toast('\u2713 Imported ' + file.name); renderContent(); updatePreview(); }
+      catch (err) { toast('\u2717 Invalid JSON: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  fi.click();
+}
+function doExport() {
+  var json = JSON.stringify(getExportConfig(), null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url; a.download = 'openclaw.json'; a.click();
+  URL.revokeObjectURL(url); toast('\u2713 Exported openclaw.json');
+}
+function doCopy() {
+  var json = JSON.stringify(getExportConfig(), null, 2);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(function() { toast('\u2713 Copied to clipboard'); });
+  } else {
+    var ta = document.createElement('textarea'); ta.value = json; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('\u2713 Copied');
+  }
+}
+function loadTemplate() {
+  config = deepClone(TEMPLATE_CONFIG); toast('\u2713 Template loaded'); renderContent(); updatePreview();
+}
+
+// ==================== PREVIEW ====================
 function togglePreview() {
   previewOpen = !previewOpen;
-  const panel = document.getElementById('previewPanel');
-  const btn = document.getElementById('togglePreview');
-  panel.classList.toggle('open', previewOpen);
-  btn.classList.toggle('active', previewOpen);
+  document.getElementById('preview').classList.toggle('open', previewOpen);
   if (previewOpen) updatePreview();
 }
-
 function updatePreview() {
   if (!previewOpen) return;
-  const json = generateJSON();
-  const el = document.getElementById('previewContent');
-  el.textContent = JSON.stringify(json, null, 2);
+  document.getElementById('previewCode').textContent = JSON.stringify(getExportConfig(), null, 2);
 }
 
-// ============================================================
-// STATUS BAR
-// ============================================================
-
-function updateStatusBar() {
-  const count = modifiedKeys.size;
-  document.getElementById('statusModified').textContent = count > 0 ? `${count} modified field${count > 1 ? 's' : ''}` : 'No changes';
-  document.getElementById('statusSection').textContent = activeSection ? SCHEMA[activeSection].label : '—';
-}
-
-function updateSidebarModified() {
-  // Just re-render sidebar for modified indicators
-  renderSidebar();
-}
-
-// ============================================================
-// SEARCH
-// ============================================================
-
-function setupSearch() {
-  const input = document.getElementById('searchInput');
-  input.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    if (!query) {
-      renderContent();
-      return;
-    }
-    searchAndHighlight(query);
-  });
-  
-  // Ctrl+K shortcut
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      input.focus();
-      input.select();
-    }
-  });
-}
-
-function searchAndHighlight(query) {
-  const results = [];
-  for (const [sectionKey, section] of Object.entries(SCHEMA)) {
-    for (const [fieldKey, fieldDef] of Object.entries(section.fields || {})) {
-      const searchable = `${fieldDef.label} ${fieldKey} ${fieldDef.hint || ''} ${section.label}`.toLowerCase();
-      if (searchable.includes(query)) {
-        results.push({ sectionKey, fieldKey, fieldDef, sectionLabel: section.label });
-      }
-    }
-  }
-  
-  const content = document.getElementById('content');
-  if (results.length === 0) {
-    content.innerHTML = `<div class="empty-state">${icon('search')}<p>No fields matching "${escHtml(query)}"</p></div>`;
-    return;
-  }
-  
-  let html = `<div class="section-title">${icon('search')} Search Results</div>`;
-  html += `<div class="section-desc">${results.length} field${results.length > 1 ? 's' : ''} found</div>`;
-  
-  for (const r of results) {
-    html += `<div style="margin-bottom:4px;font-size:.75rem;color:var(--text-muted);cursor:pointer" onclick="selectSection('${r.sectionKey}')">${icon(SCHEMA[r.sectionKey].icon)} ${r.sectionLabel} › ${r.fieldDef.section ? SCHEMA[r.sectionKey].subsections?.[r.fieldDef.section]?.label || '' : 'General'}</div>`;
-    html += renderField(r.fieldKey, r.fieldDef);
-    html += `<hr class="section-divider" style="margin:16px 0">`;
-  }
-  
-  content.innerHTML = html;
-}
-
-// ============================================================
-// DRAG & DROP
-// ============================================================
-
-function setupDragDrop() {
-  const overlay = document.getElementById('dropOverlay');
-  let dragCounter = 0;
-  
-  document.addEventListener('dragenter', (e) => {
-    e.preventDefault();
-    dragCounter++;
-    overlay.classList.add('active');
-  });
-  
-  document.addEventListener('dragleave', () => {
-    dragCounter--;
-    if (dragCounter <= 0) {
-      dragCounter = 0;
-      overlay.classList.remove('active');
-    }
-  });
-  
-  document.addEventListener('dragover', (e) => e.preventDefault());
-  
-  document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dragCounter = 0;
-    overlay.classList.remove('active');
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith('.json')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const json = JSON.parse(ev.target.result);
-          loadFromJSON(json);
-          showToast('Configuration imported via drag & drop', 'success');
-        } catch (err) {
-          showToast('Invalid JSON file', 'error');
-        }
-      };
-      reader.readAsText(file);
-    } else {
-      showToast('Please drop a .json file', 'error');
-    }
-  });
-}
-
-// ============================================================
-// TOAST NOTIFICATIONS
-// ============================================================
-
-function showToast(msg, type) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast show ' + (type || '');
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
-}
-
-// ============================================================
-// UTILITIES
-// ============================================================
-
-function escHtml(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-// ============================================================
-// BUILT-IN TEMPLATE CONFIG
-// ============================================================
-const TEMPLATE_CONFIG = {"meta": {"lastTouchedVersion": "2026.3.24"}, "browser": {"enabled": true, "executablePath": "/usr/bin/chromium", "headless": true, "noSandbox": true, "defaultProfile": "openclaw", "profiles": {"openclaw": {"cdpPort": 18800, "color": "#FF4500"}}}, "secrets": {"providers": {"filemain": {"source": "file", "path": "/path/to/your/secrets.json", "mode": "json"}}, "defaults": {"file": "filemain"}}, "auth": {"profiles": {"ai-azone:default": {"provider": "ai-azone", "mode": "token"}, "deepgram:default": {"provider": "deepgram", "mode": "token"}, "mistral:default": {"provider": "mistral", "mode": "token"}}, "order": {"ai-azone": ["ai-azone:default"], "deepgram": ["deepgram:default"], "mistral": ["mistral:default"]}}, "models": {"mode": "replace", "providers": {"ai-azone": {"baseUrl": "https://your-proxy.example.com/v1", "apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "models": []}}}, "agents": {"defaults": {"model": {"primary": "ai-azone/claude-opus-4-6", "fallbacks": ["ai-azone/kimi-k2.5", "ai-azone/kimi-k2-thinking", "ai-azone/glm-5-turbo"]}, "workspace": "~/.openclaw/workspace", "memorySearch": {"extraPaths": ["assets/reference", "voice-notes"], "multimodal": {"enabled": true, "modalities": ["all"], "maxFileBytes": 10000000}, "provider": "gemini", "remote": {"batch": {"enabled": false}}, "fallback": "none", "model": "gemini-embedding-2-preview"}, "contextPruning": {"mode": "cache-ttl", "ttl": "1h"}, "compaction": {"mode": "safeguard", "memoryFlush": {"softThresholdTokens": 12000}}, "thinkingDefault": "adaptive", "heartbeat": {"every": "1h"}, "maxConcurrent": 10, "subagents": {"maxConcurrent": 10, "model": "ai-azone/moonshotai/kimi-k2-0905"}, "sandbox": {"browser": {"enabled": true}, "mode": "non-main"}, "models": {"ai-azone/claude-opus-4-6": {"alias": "Claude Opus 4.6"}, "ai-azone/claude-sonnet-4-6": {"alias": "Claude Sonnet 4.6"}, "ai-azone/gpt-5.4": {"alias": "GPT-5.4"}, "ai-azone/gpt-5": {"alias": "GPT-5"}, "ai-azone/gpt-5.2": {"alias": "GPT-5.2"}, "ai-azone/gemini-3.1-pro-preview": {"alias": "Gemini 3.1 Pro"}, "ai-azone/gemini-2.5-pro": {"alias": "Gemini 2.5 Pro"}, "ai-azone/gemini-3-pro-preview": {"alias": "Gemini 3 Pro"}, "ai-azone/kimi-k2.5": {"alias": "Kimi K2.5"}, "ai-azone/kimi-k2-thinking": {"alias": "Kimi K2 Thinking"}, "ai-azone/glm-5-turbo": {"alias": "GLM-5 Turbo"}, "ai-azone/moonshotai/kimi-k2-0905": {"alias": "Kimi K2 0905"}}}, "list": [{"id": "main", "default": true, "workspace": "~/.openclaw/workspace", "subagents": {"allowAgents": ["*"]}}, {"id": "vex", "workspace": "~/.openclaw/workspace-vex", "model": "ai-azone/moonshotai/kimi-k2-0905", "tools": {"deny": ["exec", "write", "edit", "process", "gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts"], "fs": {"workspaceOnly": true}}}, {"id": "ops", "workspace": "~/.openclaw/workspace-ops", "model": "ai-azone/claude-sonnet-4-6", "tools": {"deny": ["process", "gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts", "exec"], "fs": {"workspaceOnly": true}}}, {"id": "echo", "model": "ai-azone/moonshotai/kimi-k2-0905", "tools": {"allow": ["message"]}}, {"id": "ora", "workspace": "~/.openclaw/workspace-ora", "model": "ai-azone/glm-5", "identity": {"name": "Ora", "emoji": "\u23f1\ufe0f"}, "tools": {"deny": ["gateway", "cron", "sessions_send", "sessions_spawn", "sessions_list", "sessions_history", "nodes", "tts", "memory_search", "memory_get", "browser", "image"], "fs": {"workspaceOnly": true}}}, {"id": "xo-dev", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}, {"id": "xo-team", "workspace": "~/.openclaw/workspace", "model": "ai-azone/gemini-3.1-pro-preview", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-opus-4-6"}}, {"id": "xo-strat", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}, {"id": "xo-coach", "workspace": "~/.openclaw/workspace", "model": "ai-azone/claude-opus-4-6", "subagents": {"allowAgents": ["*"], "model": "ai-azone/claude-sonnet-4-6"}}]}, "tools": {"media": {"audio": {"enabled": true, "providerOptions": {"deepgram": {"punctuate": true, "smart_format": true}}}}, "web": {"search": {"enabled": true, "provider": "brave", "maxResults": 5, "cacheTtlMinutes": 15}, "fetch": {"enabled": true, "maxChars": 50000, "cacheTtlMinutes": 15}}, "alsoAllow": ["lobster"], "exec": {"security": "full", "strictInlineEval": false}, "fs": {"workspaceOnly": false}, "elevated": {"enabled": false}}, "bindings": [{"agentId": "xo-dev", "match": {"channel": "telegram", "accountId": "dev"}}, {"agentId": "xo-team", "match": {"channel": "telegram", "accountId": "team"}}, {"agentId": "xo-strat", "match": {"channel": "telegram", "accountId": "strat"}}, {"agentId": "xo-coach", "match": {"channel": "telegram", "accountId": "coach"}}], "messages": {"tts": {"auto": "off", "provider": "elevenlabs", "modelOverrides": {"enabled": true}, "elevenlabs": {"baseUrl": "https://api.elevenlabs.io", "apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "voiceId": "YOUR_VOICE_ID", "modelId": "eleven_multilingual_v2", "languageCode": "fr"}, "openai": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "model": "gpt-4o-mini-tts", "voice": "alloy"}, "microsoft": {"voice": "fr-FR-EloiseNeural", "lang": "fr-FR", "outputFormat": "audio-24khz-48kbitrate-mono-mp3", "pitch": "0%", "rate": "0%"}}}, "commands": {"native": "auto", "nativeSkills": "auto", "bash": true, "restart": true, "ownerDisplay": "raw"}, "hooks": {}, "channels": {"whatsapp": {"enabled": true, "sendReadReceipts": true, "dmPolicy": "allowlist", "selfChatMode": false, "allowFrom": ["+1XXXXXXXXXX"], "groupPolicy": "allowlist", "debounceMs": 2000, "mediaMaxMb": 50, "actions": {"reactions": true, "sendMessage": true, "polls": true}}, "telegram": {"enabled": true, "dmPolicy": "pairing", "groupPolicy": "allowlist", "streaming": "partial", "actions": {"reactions": true, "sendMessage": true, "deleteMessage": true, "sticker": true}, "accounts": {"default": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "streaming": "partial"}, "dev": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "team": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "strat": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}, "coach": {"dmPolicy": "pairing", "botToken": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}, "groupPolicy": "disabled", "streaming": "partial"}}}}, "gateway": {"port": 18789, "mode": "local", "bind": "lan", "controlUi": {"allowedOrigins": ["https://your-domain.example.com"]}, "auth": {"mode": "token", "rateLimit": {"maxAttempts": 10, "windowMs": 60000, "lockoutMs": 300000}}, "trustedProxies": ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12"], "tailscale": {"mode": "off", "resetOnExit": false}, "reload": {"mode": "hybrid", "debounceMs": 300}}, "skills": {"install": {"nodeManager": "npm"}}, "plugins": {"allow": ["telegram", "whatsapp", "discord", "memory-core", "device-pair", "lobster", "llm-task", "acpx"], "entries": {"telegram": {"enabled": true}, "whatsapp": {"enabled": true}, "discord": {"enabled": true}, "brave": {"enabled": true, "config": {"webSearch": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}}}}, "google": {"config": {"webSearch": {"apiKey": {"source": "file", "provider": "filemain", "id": "/YOUR_SECRET_PATH"}}}}, "llm-task": {"enabled": true}, "acpx": {"enabled": true, "config": {"permissionMode": "approve-all", "nonInteractivePermissions": "deny"}}}}, "acp": {"enabled": true, "defaultAgent": "codex", "backend": "acpx", "dispatch": {"enabled": true}, "allowedAgents": ["claude", "codex", "copilot", "cursor", "droid", "gemini", "iflow", "kilocode", "kimi", "kiro", "openclaw", "opencode", "pi", "qwen"], "maxConcurrentSessions": 8, "stream": {"coalesceIdleMs": 300, "maxChunkChars": 1200}, "runtime": {"ttlMinutes": 120}}};
-
-function loadTemplate() {
-  if (!confirm('Replace current config with the reference template?')) return;
-  loadFromJSON(TEMPLATE_CONFIG);
-  showToast('Template loaded!', 'success');
-}
-
-// ============================================================
-// INITIALIZE
-// ============================================================
-
-buildDefaults();
-initConfig();
-
-// Auto-load template on first visit
-loadFromJSON(TEMPLATE_CONFIG);
-
+// ==================== INIT ====================
+config = deepClone(TEMPLATE_CONFIG);
+activeSection = 'browser';
 renderSidebar();
-setupSearch();
-setupDragDrop();
-updatePreview();
-
-// Select first section by default
-selectSection('meta');
+renderContent();
 </script>
 </body>
 </html>
