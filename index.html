@@ -972,6 +972,19 @@ const SECTIONS = [
   {
     id:'channels', label:'Channels', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0118 0"/><path d="M4 11a5 5 0 0110 0"/><line x1="4" y1="11" x2="4" y2="11.01"/></svg>',
     subs:[
+      { id:'channels.defaults', label:'Defaults',
+        fields:[
+          {k:'channels.defaults.groupPolicy',info:'Fallback group policy when a provider does not set its own.',label:'Default Group Policy',type:'select',opts:['allowlist','open','disabled'],desc:'Default group policy across all channels'},
+          {k:'channels.defaults.heartbeat.showOk',info:'Include healthy channel statuses in heartbeat output.',label:'Heartbeat Show OK',type:'bool',desc:'Show healthy statuses in heartbeat'},
+          {k:'channels.defaults.heartbeat.showAlerts',info:'Include degraded/error statuses in heartbeat output.',label:'Heartbeat Show Alerts',type:'bool',desc:'Show alert statuses in heartbeat'},
+          {k:'channels.defaults.heartbeat.useIndicator',info:'Compact indicator-style heartbeat output instead of verbose.',label:'Heartbeat Indicator',type:'bool',desc:'Use compact heartbeat indicators'},
+        ]
+      },
+      { id:'channels.modelByChannel', label:'Model by Channel',
+        fields:[
+          {k:'channels.modelByChannel',info:'Pin specific channel IDs to specific models. Format: { discord: { "channelId": "provider/model" }, telegram: { "-100xxx": "model" } }.',label:'Model by Channel',type:'kv-object',desc:'Channel → model mapping per platform',valType:'json'},
+        ]
+      },
       { id:'channels.whatsapp', label:'WhatsApp',
         groups:[
           { title:'General', fields:[
@@ -992,6 +1005,11 @@ const SECTIONS = [
             {k:'channels.whatsapp.actions.sendMessage',info:'Allow sending messages.',label:'Send Message',type:'bool',desc:'Enable sending'},
             {k:'channels.whatsapp.actions.polls',info:'Allow creating polls.',label:'Polls',type:'bool',desc:'Enable polls'},
           ]},
+          { title:'Groups', fields:[
+            {k:'channels.whatsapp.groups',info:'Per-group config. Use "*" as wildcard for all groups. Each entry: { requireMention: true/false, allowFrom: [...], systemPrompt: "..." }.',label:'Groups Config',type:'kv-object',desc:'Group settings (groupId or * → config)',valType:'json'},
+            {k:'channels.whatsapp.groupAllowFrom',info:'Phone numbers allowed to interact in groups. Format: +33612345678.',label:'Group Allow From',type:'array',desc:'Allowed numbers in groups'},
+            {k:'channels.whatsapp.chunkMode',info:'length = split by char count. newline = split at newline boundaries.',label:'Chunk Mode',type:'select',opts:['length','newline'],desc:'How to split long messages'},
+          ]},
         ]
       },
       { id:'channels.telegram', label:'Telegram',
@@ -1009,11 +1027,25 @@ const SECTIONS = [
             {k:'channels.telegram.actions.reactions',info:'Allow adding emoji reactions to messages.',label:'Reactions',type:'bool',desc:'Enable reactions'},
             {k:'channels.telegram.actions.sendMessage',info:'Allow sending messages.',label:'Send Message',type:'bool',desc:'Enable sending'},
           ]},
+          { title:'Groups', fields:[
+            {k:'channels.telegram.groups',info:'Per-group config. Keys: "*" (all groups), or "-100xxx" (specific group). Each: { requireMention, allowFrom, systemPrompt, topics: { topicId: { requireMention, skills, systemPrompt } } }.',label:'Groups Config',type:'kv-object',desc:'Group settings (groupId or * → config)',valType:'json'},
+            {k:'channels.telegram.reactionNotifications',info:'off = ignore reactions. own = notify on reactions to bot messages. all = notify on all reactions.',label:'Reaction Notifications',type:'select',opts:['off','own','all'],desc:'When to process reaction events'},
+            {k:'channels.telegram.mediaMaxMb',info:'Max media upload size. Telegram limit is 50MB for bots.',label:'Media Max MB',type:'number',desc:'Max media file size in MB'},
+          ]},
+          { title:'Network & Proxy', fields:[
+            {k:'channels.telegram.proxy',info:'Proxy URL for Telegram API (e.g. socks5://localhost:9050). Useful in restricted networks.',label:'Proxy',type:'string',desc:'Proxy URL for Telegram API'},
+            {k:'channels.telegram.webhookUrl',info:'Use webhook mode instead of polling. URL must be HTTPS and publicly reachable.',label:'Webhook URL',type:'string',desc:'Webhook endpoint URL'},
+            {k:'channels.telegram.webhookSecret',info:'Secret token for webhook verification.',label:'Webhook Secret',type:'string',desc:'Webhook verification secret'},
+          ]},
+          { title:'Retry', fields:[
+            {k:'channels.telegram.retry',info:'Retry config for Telegram API calls: { attempts, minDelayMs, maxDelayMs, jitter }.',label:'Retry Config',type:'kv-object',desc:'Retry policy for API calls',valType:'json'},
+          ]},
           { title:'Accounts', fields:[
-            {k:'channels.telegram.accounts',info:'Multi-bot setup. Each account has its own token and policies.',label:'Accounts',type:'kv-object',desc:'Bot accounts (name → config)',valType:'json'},
+            {k:'channels.telegram.accounts',info:'Multi-bot setup. Each account has its own token, dmPolicy, groupPolicy, streaming.',label:'Accounts',type:'kv-object',desc:'Bot accounts (name → config)',valType:'json'},
+            {k:'channels.telegram.defaultAccount',info:'Default account for outbound messages when multiple accounts are configured.',label:'Default Account',type:'string',desc:'Default account ID'},
           ]},
           { title:'Custom Commands', fields:[
-            {k:'channels.telegram.customCommands',info:'Extra bot menu commands shown in Telegram UI.',label:'Custom Commands',type:'kv-object',desc:'Custom commands (cmd → desc)',valType:'string'},
+            {k:'channels.telegram.customCommands',info:'Commands shown in the Telegram bot menu. Array of { command, description }.',label:'Custom Commands',type:'kv-object',desc:'Bot menu commands',valType:'json'},
           ]},
         ]
       },
@@ -1037,11 +1069,26 @@ const SECTIONS = [
             {k:'channels.discord.guilds',info:'Per-guild config: channels, users, mention rules, system prompts.',label:'Guilds',type:'kv-object',desc:'Guild configs',valType:'json'},
           ]},
           { title:'Actions', fields:[
-            {k:'channels.discord.actions.reactions',info:'Allow the bot to add/read emoji reactions.',label:'Reactions',type:'bool',desc:'Enable reactions'},
-            {k:'channels.discord.actions.sendMessage',info:'Allow the bot to send messages in channels.',label:'Send Message',type:'bool',desc:'Enable sending'},
-            {k:'channels.discord.actions.threads',info:'Allow creating and managing threads.',label:'Threads',type:'bool',desc:'Thread creation'},
-            {k:'channels.discord.actions.voiceJoin',info:'Allow joining voice channels.',label:'Voice Join',type:'bool',desc:'Voice join'},
-            {k:'channels.discord.actions.voiceSpeak',info:'Allow speaking in voice channels.',label:'Voice Speak',type:'bool',desc:'Voice speak'},
+            {k:'channels.discord.actions.reactions',info:'Allow adding/reading emoji reactions.',label:'Reactions',type:'bool',desc:'Enable reactions'},
+            {k:'channels.discord.actions.stickers',info:'Allow sending stickers.',label:'Stickers',type:'bool',desc:'Enable stickers'},
+            {k:'channels.discord.actions.polls',info:'Allow creating polls.',label:'Polls',type:'bool',desc:'Enable polls'},
+            {k:'channels.discord.actions.permissions',info:'Allow reading/managing channel permissions.',label:'Permissions',type:'bool',desc:'Permissions management'},
+            {k:'channels.discord.actions.messages',info:'Allow sending messages.',label:'Messages',type:'bool',desc:'Enable messages'},
+            {k:'channels.discord.actions.threads',info:'Allow creating/managing threads.',label:'Threads',type:'bool',desc:'Thread management'},
+            {k:'channels.discord.actions.pins',info:'Allow pinning/unpinning messages.',label:'Pins',type:'bool',desc:'Pin management'},
+            {k:'channels.discord.actions.search',info:'Allow searching messages in channels.',label:'Search',type:'bool',desc:'Message search'},
+            {k:'channels.discord.actions.memberInfo',info:'Allow reading member profiles.',label:'Member Info',type:'bool',desc:'Read member info'},
+            {k:'channels.discord.actions.roleInfo',info:'Allow reading role details.',label:'Role Info',type:'bool',desc:'Read role info'},
+            {k:'channels.discord.actions.roles',info:'Allow assigning/removing roles. Dangerous — keep false unless needed.',label:'Roles',type:'bool',desc:'Role management'},
+            {k:'channels.discord.actions.channelInfo',info:'Allow reading channel metadata.',label:'Channel Info',type:'bool',desc:'Read channel info'},
+            {k:'channels.discord.actions.voiceStatus',info:'Allow reading voice channel status.',label:'Voice Status',type:'bool',desc:'Voice status'},
+            {k:'channels.discord.actions.events',info:'Allow creating/managing scheduled events.',label:'Events',type:'bool',desc:'Event management'},
+            {k:'channels.discord.actions.moderation',info:'Allow moderation actions (kick, ban, timeout). Dangerous.',label:'Moderation',type:'bool',desc:'Moderation actions'},
+          ]},
+          { title:'DM Settings', fields:[
+            {k:'channels.discord.dm.enabled',info:'Enable DM conversations with the bot.',label:'DM Enabled',type:'bool',desc:'Allow DMs'},
+            {k:'channels.discord.dm.groupEnabled',info:'Allow group DM conversations.',label:'Group DM Enabled',type:'bool',desc:'Allow group DMs'},
+            {k:'channels.discord.dm.groupChannels',info:'Channel names for group DM threads.',label:'Group DM Channels',type:'array',desc:'Group DM channel names'},
           ]},
           { title:'Voice', fields:[
             {k:'channels.discord.voice',info:'Voice channel config: auto-join, TTS provider, encryption.',label:'Voice Config',type:'kv-object',desc:'Voice configuration',valType:'json'},
