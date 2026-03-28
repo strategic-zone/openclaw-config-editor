@@ -34,7 +34,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow:hid
 .content{flex:1;overflow-y:auto;padding:24px 32px;scrollbar-width:thin}
 .preview{width:0;overflow:hidden;transition:width .2s;background:var(--bg3);border-left:1px solid var(--border);position:relative}
 .preview.open{width:400px}
-.preview pre{padding:14px;font-family:var(--mono);font-size:.78rem;color:var(--text2);overflow:auto;height:calc(100vh - var(--topbar) - 40px);white-space:pre;tab-size:2;scrollbar-width:thin}
+.preview textarea#previewCode{padding:14px;font-family:var(--mono);font-size:.78rem;color:var(--text2);overflow:auto;height:calc(100vh - var(--topbar) - 40px);white-space:pre;tab-size:2;scrollbar-width:thin;background:transparent;border:none;outline:none;resize:none;width:100%;display:block}
 .preview-hdr{height:40px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:.82rem;color:var(--text2)}
 .preview-hdr span{flex:1}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:.78rem;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap}
@@ -128,8 +128,8 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
     <div class="sidebar" id="sidebar"></div>
     <div class="content" id="content"></div>
     <div class="preview" id="preview">
-      <div class="preview-hdr"><span>JSON Preview</span></div>
-      <pre id="previewCode"></pre>
+      <div class="preview-hdr"><span>JSON Editor</span><span style="font-size:.7rem;color:var(--muted);font-weight:400">edit &amp; click Apply</span><button class="btn btn-sm btn-p" onclick="applyPreviewEdit()" style="margin-left:8px">Apply</button></div>
+      <textarea id="previewCode" spellcheck="false" onblur="applyPreviewEdit()"></textarea>
     </div>
   </div>
 </div>
@@ -1582,7 +1582,21 @@ function togglePreview() {
 }
 function updatePreview() {
   if (!previewOpen) return;
-  document.getElementById('previewCode').textContent = JSON.stringify(getExportConfig(), null, 2);
+  var el = document.getElementById('previewCode'); if (document.activeElement !== el) el.value = JSON.stringify(getExportConfig(), null, 2);
+}
+
+// ==================== APPLY PREVIEW EDIT ====================
+function applyPreviewEdit() {
+  var el = document.getElementById('previewCode');
+  try {
+    var parsed = JSON.parse(el.value);
+    config = parsed;
+    renderSidebar();
+    renderContent();
+    toast('\u2713 Applied JSON changes');
+  } catch(e) {
+    toast('\u2717 Invalid JSON: ' + e.message);
+  }
 }
 
 // ==================== INIT ====================
