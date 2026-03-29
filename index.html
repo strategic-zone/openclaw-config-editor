@@ -1736,6 +1736,27 @@ config = deepClone(TEMPLATE_CONFIG);
 activeSection = 'browser';
 renderSidebar();
 renderContent();
+
+// Mobile content height fix
+function fixMobileHeight() {
+  if (window.innerWidth <= 768) {
+    var topbar = document.querySelector('.topbar');
+    var sidebar = document.querySelector('.sidebar');
+    var content = document.querySelector('.content');
+    if (topbar && sidebar && content) {
+      var available = window.innerHeight - topbar.offsetHeight - sidebar.offsetHeight;
+      content.style.height = Math.max(available, 200) + 'px';
+      content.style.flex = 'none';
+    }
+  } else {
+    var content = document.querySelector('.content');
+    if (content) { content.style.height = ''; content.style.flex = ''; }
+  }
+}
+window.addEventListener('resize', fixMobileHeight);
+window.addEventListener('load', fixMobileHeight);
+// Also run after DOM ready
+
 </script>
 </body>
 </html>
