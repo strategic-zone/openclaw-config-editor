@@ -108,9 +108,15 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
 
 
 
+/* Force icon-only on mobile via JS class */
+body.mobile .btn-label{display:none!important}
+body.mobile .topbar{flex-wrap:nowrap!important;height:50px!important;overflow:hidden!important}
+body.mobile .topbar .actions{flex-wrap:nowrap!important}
+
 /* ==================== MOBILE RESPONSIVE ==================== */
 @media (max-width:768px){
   .btn-label{display:none}
+  body:not(.mobile) .btn-label{display:inline}
   .topbar{flex-wrap:nowrap;height:50px;padding:0 10px;gap:6px;overflow:hidden}
   .topbar .logo{flex:1;min-width:0;overflow:hidden}
   .topbar .logo-text{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1742,6 +1748,11 @@ renderContent();
 
 // Mobile content height fix
 function fixMobileHeight() {
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('mobile');
+  } else {
+    document.body.classList.remove('mobile');
+  }
   if (window.innerWidth <= 768) {
     var topbar = document.querySelector('.topbar');
     var sidebar = document.querySelector('.sidebar');
