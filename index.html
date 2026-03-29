@@ -114,7 +114,7 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
   .topbar .logo{flex:1;min-width:0}
   .topbar .actions{flex-wrap:wrap;gap:4px}
   .topbar .actions .btn{font-size:.72rem;padding:5px 8px}
-  .main-wrap{flex-direction:column;overflow:visible}
+  .main-wrap{flex-direction:column;overflow:hidden;flex:1;min-height:0}
   .sidebar{
     width:100%!important;height:auto;border-right:none;
     border-bottom:2px solid var(--border);
@@ -142,7 +142,7 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
     border-radius:20px;margin:0;background:var(--surface);
   }
   .sb-item.active{background:var(--accent);color:var(--bg)!important}
-  .content{padding:16px;height:auto;overflow-y:auto;flex:1}
+  .content{padding:16px;overflow-y:auto;flex:1;min-height:0;height:auto}
   .preview.open{
     width:100%;position:fixed;top:0;left:0;right:0;bottom:0;
     z-index:500;border-left:none;
