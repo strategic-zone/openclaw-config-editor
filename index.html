@@ -110,6 +110,11 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
 
 /* ==================== MOBILE RESPONSIVE ==================== */
 @media (max-width:768px){
+  .btn-label{display:none}
+  .btn svg{margin-right:0!important}
+  .topbar{padding:6px 10px;gap:4px}
+  .topbar .logo-text{font-size:.85rem}
+  
   .topbar{flex-wrap:wrap;height:auto;padding:8px 12px;gap:6px}
   .topbar .logo{flex:1;min-width:0}
   .topbar .actions{flex-wrap:wrap;gap:4px}
@@ -176,18 +181,18 @@ textarea{font-family:var(--mono);min-height:60px;resize:vertical}
       OpenClaw Config Editor
     </div>
     <div class="actions">
-      <button class="btn" onclick="doImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import</button>
-      <button class="btn btn-p" onclick="doExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Export</button>
-      <button class="btn" onclick="doCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy</button>
-      <button class="btn" onclick="loadTemplate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Template</button>
-      <button class="btn" onclick="togglePreview()" id="previewBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>JSON</button>
+      <button class="btn" onclick="doImport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="btn-label">Import</span></button>
+      <button class="btn btn-p" onclick="doExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="btn-label">Export</span></button>
+      <button class="btn" onclick="doCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span class="btn-label">Copy</span></button>
+      <button class="btn" onclick="loadTemplate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="btn-label">Template</span></button>
+      <button class="btn" onclick="togglePreview()" id="previewBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="btn-label">JSON</span></button>
     </div>
   </div>
   <div class="main-wrap">
     <div class="sidebar" id="sidebar"></div>
     <div class="content" id="content"></div>
     <div class="preview" id="preview">
-      <div class="preview-hdr"><span>JSON Editor</span><span style="font-size:.7rem;color:var(--muted);font-weight:400">edit &amp; click Apply</span><button class="btn btn-sm btn-p" onclick="applyPreviewEdit()" style="margin-left:8px">Apply</button></div>
+      <div class="preview-hdr"><span>JSON Editor</span><span style="font-size:.7rem;color:var(--muted);font-weight:400">edit &amp; click Apply</span><button class="btn btn-sm btn-p" onclick="applyPreviewEdit()" style="margin-left:8px"><span class="btn-label">Apply</span></button></div>
       <textarea id="previewCode" spellcheck="false" onblur="applyPreviewEdit()"></textarea>
     </div>
   </div>
