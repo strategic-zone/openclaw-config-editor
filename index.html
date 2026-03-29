@@ -1769,7 +1769,11 @@ function fixMobileHeight() {
 }
 window.addEventListener('resize', fixMobileHeight);
 window.addEventListener('load', fixMobileHeight);
-// Also run after DOM ready
+// Run immediately at parse time
+fixMobileHeight();
+// Run again after a tick to catch proper viewport
+setTimeout(fixMobileHeight, 50);
+setTimeout(fixMobileHeight, 500);
 
 </script>
 </body>
